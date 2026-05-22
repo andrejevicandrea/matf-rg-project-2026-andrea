@@ -5,6 +5,7 @@
 #ifndef MAINCONTROLLER_HPP
 #define MAINCONTROLLER_HPP
 #include <engine/core/Controller.hpp>
+#include <engine/graphics/GraphicsController.hpp>
 #include <engine/resources/ResourcesController.hpp>
 
 namespace app {
@@ -24,6 +25,7 @@ class MainController final : public engine::core::Controller {
     unsigned m_floor_VBO = 0;
 
     engine::resources::Shader *m_basic_shader = nullptr;
+    engine::graphics::GraphicsController *m_graphics_controller = nullptr;
 
 };
 
