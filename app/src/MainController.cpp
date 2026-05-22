@@ -43,8 +43,8 @@ void MainController::initialize() {
 
     //menjanje pozicije kamere
     auto camera = m_graphics_controller->camera();
-    camera->Position = glm::vec3(0.0f, 3.0f, 5.0f);
-    camera->rotate_camera(0.0f, -250.0f);
+    camera->Position = glm::vec3(3.0f, 3.0f, 5.0f);
+    camera->rotate_camera(-300.0f, -250.0f);
 }
 
 bool MainController::loop() {
@@ -60,15 +60,49 @@ void MainController::end_draw() { engine::core::Controller::get<engine::platform
 void MainController::draw() {
     m_basic_shader->use();
 
-    glm::mat4 model = glm::mat4(1.0f);
+    glm::mat4 view = m_graphics_controller->camera()->view_matrix();
+    glm::mat4 projection = m_graphics_controller->projection_matrix();
 
-    model = glm::translate(model, glm::vec3(3.0f, -1.0f, -2.0f));
-    model = glm::rotate(model, glm::radians(90.0f), glm::vec3(1.0f, 0.0f, 0.0f));
-    model = glm::scale(model, glm::vec3(9.0f, 9.0f, 1.0f));
+    m_basic_shader->set_mat4("view", view);
+    m_basic_shader->set_mat4("projection", projection);
 
-    m_basic_shader->set_mat4("model", model);
-    m_basic_shader->set_mat4("view", m_graphics_controller->camera()->view_matrix());
-    m_basic_shader->set_mat4("projection", m_graphics_controller->projection_matrix());
+    glBindVertexArray(m_floor_VAO);
+
+    //beli pod
+    glm::mat4 floor_model = glm::mat4(1.0f);
+
+    floor_model = glm::translate(floor_model, glm::vec3(3.0f, 0.0f, 3.0f));
+    floor_model = glm::rotate(floor_model, glm::radians(90.0f), glm::vec3(1.0f, 0.0f, 0.0f));
+    floor_model = glm::scale(floor_model, glm::vec3(6.0f, 6.0f, 1.0f));
+
+    m_basic_shader->set_mat4("model", floor_model);
+    m_basic_shader->set_vec3("objectColor", glm::vec3(1.0f, 1.0f, 1.0f));
+
+    glDrawArrays(GL_TRIANGLES, 0, 6);
+
+    //zadnji zid zute boje
+
+    glm::mat4 back_wall_model = glm::mat4(1.0f);
+
+    back_wall_model = glm::translate(back_wall_model, glm::vec3(3.0f, 3.0f, 0.0f));
+    back_wall_model = glm::scale(back_wall_model, glm::vec3(6.0f, 6.0f, 1.0f));
+
+    m_basic_shader->set_mat4("model", back_wall_model);
+    m_basic_shader->set_vec3("objectColor", glm::vec3(1.0f, 0.9f, 0.2f));
+
+    glDrawArrays(GL_TRIANGLES, 0, 6);
+
+    //levi zid plave boje
+
+    glm::mat4 left_wall_model = glm::mat4(1.0f);
+    left_wall_model = glm::translate(left_wall_model, glm::vec3(0.0f, 3.0f, 3.0f));
+    left_wall_model = glm::rotate(left_wall_model, glm::radians(90.0f), glm::vec3(0.0f, 1.0f, 0.0f));
+    left_wall_model = glm::scale(left_wall_model, glm::vec3(6.0f, 6.0f, 1.0f));
+
+    m_basic_shader->set_mat4("model", left_wall_model);
+    m_basic_shader->set_vec3("objectColor", glm::vec3(0.2f, 0.45f, 1.0f));
+
+    glDrawArrays(GL_TRIANGLES, 0, 6);
 
 
     glBindVertexArray(m_floor_VAO);

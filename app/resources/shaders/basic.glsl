@@ -16,6 +16,8 @@ void main() {
 
 out vec4 FragColor; //izlazni atribut boja
 
+uniform vec3 objectColor;
+
 void main() {
-    FragColor = vec4(1.0, 1.0, 1.0, 1.0); //postavljanje na belu boju samo radi testiranja, posle dolazi tekstura
+    FragColor = vec4(objectColor, 1.0);
 }
