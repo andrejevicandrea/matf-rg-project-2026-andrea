@@ -6,6 +6,7 @@
 
 #include "../../engine/libs/glad/include/glad/glad.h"
 
+#include <assimp/light.h>
 #include <engine/graphics/GraphicsController.hpp>
 #include <engine/graphics/OpenGL.hpp>
 #include <engine/platform/PlatformController.hpp>
@@ -13,13 +14,16 @@
 namespace app {
 void MainController::initialize() {
     //dodavanje poda najpre u centru ekrana kao obican beli kvadrat
-    float floor_vertices[] = {-0.5f, -0.5f, 0.0f,
-                              0.5f, -0.5f, 0.0f,
-                              0.5f, 0.5f, 0.0f,
+    float floor_vertices[] = {
+            // koord pozicije + teksture
+            -0.5f, -0.5f, 0.0f, 0.0f, 0.0f,
+            0.5f, -0.5f, 0.0f, 4.0f, 0.0f,
+            0.5f, 0.5f, 0.0f, 4.0f, 4.0f,
 
-                              -0.5f, -0.5f, 0.0f,
-                              0.5f, 0.5f, 0.0f,
-                              -0.5f, 0.5f, 0.0f};
+            -0.5f, -0.5f, 0.0f, 0.0f, 0.0f,
+            0.5f, 0.5f, 0.0f, 4.0f, 4.0f,
+            -0.5f, 0.5f, 0.0f, 0.0f, 4.0f
+    };
     //generisanje VAO i VBO
     glGenVertexArrays(1, &m_floor_VAO);
     glGenBuffers(1, &m_floor_VBO);
@@ -30,8 +34,13 @@ void MainController::initialize() {
 
     glBufferData(GL_ARRAY_BUFFER, sizeof(floor_vertices), floor_vertices, GL_STATIC_DRAW);
 
-    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void *) 0);
+    // pozicije
+    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void *) 0);
     glEnableVertexAttribArray(0);
+
+    // teksture
+    glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void *) (3 * sizeof(float)));
+    glEnableVertexAttribArray(1);
 
     glBindBuffer(GL_ARRAY_BUFFER, 0);
 
@@ -45,6 +54,9 @@ void MainController::initialize() {
     auto camera = m_graphics_controller->camera();
     camera->Position = glm::vec3(3.0f, 3.0f, 5.0f);
     camera->rotate_camera(-300.0f, -250.0f);
+
+    //tekstura za pod
+    m_floor_texture = engine::core::Controller::get<engine::resources::ResourcesController>()->texture("floor_texture");
 }
 
 bool MainController::loop() {
@@ -76,7 +88,11 @@ void MainController::draw() {
     floor_model = glm::scale(floor_model, glm::vec3(6.0f, 6.0f, 1.0f));
 
     m_basic_shader->set_mat4("model", floor_model);
-    m_basic_shader->set_vec3("objectColor", glm::vec3(1.0f, 1.0f, 1.0f));
+    // bindovanje teksture
+    m_basic_shader->set_int("useTexture", true);
+    m_basic_shader->set_int("texture_diffuse", 0);
+    m_floor_texture->bind(GL_TEXTURE0);
+
 
     glDrawArrays(GL_TRIANGLES, 0, 6);
 
@@ -88,6 +104,7 @@ void MainController::draw() {
     back_wall_model = glm::scale(back_wall_model, glm::vec3(6.0f, 6.0f, 1.0f));
 
     m_basic_shader->set_mat4("model", back_wall_model);
+    m_basic_shader->set_int("useTexture", 0);
     m_basic_shader->set_vec3("objectColor", glm::vec3(1.0f, 0.9f, 0.2f));
 
     glDrawArrays(GL_TRIANGLES, 0, 6);
@@ -100,6 +117,7 @@ void MainController::draw() {
     left_wall_model = glm::scale(left_wall_model, glm::vec3(6.0f, 6.0f, 1.0f));
 
     m_basic_shader->set_mat4("model", left_wall_model);
+    m_basic_shader->set_int("useTexture", 0);
     m_basic_shader->set_vec3("objectColor", glm::vec3(0.2f, 0.45f, 1.0f));
 
     glDrawArrays(GL_TRIANGLES, 0, 6);

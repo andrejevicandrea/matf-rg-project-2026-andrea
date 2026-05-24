@@ -7,6 +7,7 @@
 #include <engine/core/Controller.hpp>
 #include <engine/graphics/GraphicsController.hpp>
 #include <engine/resources/ResourcesController.hpp>
+#include <engine/resources/Texture.hpp>
 
 namespace app {
 
@@ -26,6 +27,7 @@ class MainController final : public engine::core::Controller {
 
     engine::resources::Shader *m_basic_shader = nullptr;
     engine::graphics::GraphicsController *m_graphics_controller = nullptr;
+    engine::resources::Texture *m_floor_texture = nullptr;
 
 };
 

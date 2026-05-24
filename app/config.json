@@ -1,6 +1,10 @@
 {
   "resources": {
-    "models": {
+    "models": {},
+    "textures": {
+      "floor_texture": {
+        "path": "floor_texture.png"
+      }
     }
   },
   "window": {
