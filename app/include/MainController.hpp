@@ -8,6 +8,7 @@
 #include <engine/graphics/GraphicsController.hpp>
 #include <engine/resources/ResourcesController.hpp>
 #include <engine/resources/Texture.hpp>
+#include <engine/resources/Shader.hpp>
 
 namespace app {
 
@@ -25,9 +26,12 @@ class MainController final : public engine::core::Controller {
     unsigned m_floor_VAO = 0;
     unsigned m_floor_VBO = 0;
 
-    engine::resources::Shader *m_basic_shader = nullptr;
     engine::graphics::GraphicsController *m_graphics_controller = nullptr;
+    engine::resources::ResourcesController *m_resources_controller = nullptr;
+
+    engine::resources::Shader *m_basic_shader = nullptr;
     engine::resources::Texture *m_floor_texture = nullptr;
+    engine::resources::Texture *m_wall_texture = nullptr;
 
 };
 

@@ -4,6 +4,9 @@
     "textures": {
       "floor_texture": {
         "path": "floor_texture.png"
+      },
+      "wall_texture": {
+        "path": "wall_texture.jpg"
       }
     }
   },

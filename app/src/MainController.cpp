@@ -44,19 +44,20 @@ void MainController::initialize() {
 
     glBindBuffer(GL_ARRAY_BUFFER, 0);
 
-    //inicijalizacija shadera:
-    m_basic_shader = engine::core::Controller::get<engine::resources::ResourcesController>()->shader("basic");
-
-    //inicijalizacija graphic controlera
+    //refactorinng tako da izvucem prvo kontroler resources kao graphic sto sam i onda ucitavanje teksture i shadera
+    //inicijalizacija graphic i resources controlera
     m_graphics_controller = engine::core::Controller::get<engine::graphics::GraphicsController>();
+    m_resources_controller = engine::core::Controller::get<engine::resources::ResourcesController>();
+
+
+    m_basic_shader = m_resources_controller->shader("basic");
+    m_floor_texture = m_resources_controller->texture("floor_texture");
+    m_wall_texture = m_resources_controller->texture("wall_texture");
 
     //menjanje pozicije kamere
     auto camera = m_graphics_controller->camera();
     camera->Position = glm::vec3(3.0f, 3.0f, 5.0f);
     camera->rotate_camera(-300.0f, -250.0f);
-
-    //tekstura za pod
-    m_floor_texture = engine::core::Controller::get<engine::resources::ResourcesController>()->texture("floor_texture");
 }
 
 bool MainController::loop() {
@@ -80,7 +81,7 @@ void MainController::draw() {
 
     glBindVertexArray(m_floor_VAO);
 
-    //beli pod
+    //Pod sa teksturom
     glm::mat4 floor_model = glm::mat4(1.0f);
 
     floor_model = glm::translate(floor_model, glm::vec3(3.0f, 0.0f, 3.0f));
@@ -96,7 +97,7 @@ void MainController::draw() {
 
     glDrawArrays(GL_TRIANGLES, 0, 6);
 
-    //zadnji zid zute boje
+    //zadnji zid
 
     glm::mat4 back_wall_model = glm::mat4(1.0f);
 
@@ -104,12 +105,13 @@ void MainController::draw() {
     back_wall_model = glm::scale(back_wall_model, glm::vec3(6.0f, 6.0f, 1.0f));
 
     m_basic_shader->set_mat4("model", back_wall_model);
-    m_basic_shader->set_int("useTexture", 0);
-    m_basic_shader->set_vec3("objectColor", glm::vec3(1.0f, 0.9f, 0.2f));
+    m_basic_shader->set_int("useTexture", true);
+    m_basic_shader->set_int("texture_diffuse", 0);
+    m_wall_texture->bind(GL_TEXTURE0);
 
     glDrawArrays(GL_TRIANGLES, 0, 6);
 
-    //levi zid plave boje
+    //levi zid
 
     glm::mat4 left_wall_model = glm::mat4(1.0f);
     left_wall_model = glm::translate(left_wall_model, glm::vec3(0.0f, 3.0f, 3.0f));
@@ -117,15 +119,13 @@ void MainController::draw() {
     left_wall_model = glm::scale(left_wall_model, glm::vec3(6.0f, 6.0f, 1.0f));
 
     m_basic_shader->set_mat4("model", left_wall_model);
-    m_basic_shader->set_int("useTexture", 0);
-    m_basic_shader->set_vec3("objectColor", glm::vec3(0.2f, 0.45f, 1.0f));
+    m_basic_shader->set_int("useTexture", true);
+    m_basic_shader->set_int("texture_diffuse", 0);
+    m_wall_texture->bind(GL_TEXTURE0);
 
     glDrawArrays(GL_TRIANGLES, 0, 6);
 
 
-    glBindVertexArray(m_floor_VAO);
-    glDrawArrays(GL_TRIANGLES, 0, 6);
-    glBindVertexArray(0);
 }
 }// app
 
