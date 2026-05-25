@@ -57,10 +57,13 @@ void MainController::initialize() {
 
     //menjanje pozicije kamere
     m_camera = m_graphics_controller->camera();
-    m_camera->Position = glm::vec3(2.0f, 3.0f, 7.0f);
+    m_camera->Position = glm::vec3(3.0f, 4.0f, 9.0f);
     m_camera->rotate_camera(-115.0f, -250.0f);
 
     m_platform_controller->set_enable_cursor(true);
+
+    //model
+    m_kitchen_model = m_resources_controller->model("overcooked_assets");
 
 }
 
@@ -128,6 +131,18 @@ void MainController::draw() {
     m_wall_texture->bind(GL_TEXTURE0);
 
     glDrawArrays(GL_TRIANGLES, 0, 6);
+
+
+    //model kuhinje
+    glm::mat4 kitchen_model = glm::mat4(1.0f);
+
+    kitchen_model = glm::translate(kitchen_model, glm::vec3(3.0f, 0.02f, 3.0f));
+    kitchen_model = glm::scale(kitchen_model, glm::vec3(0.25f));
+
+    m_basic_shader->set_mat4("model", kitchen_model);
+    m_basic_shader->set_int("useTexture", true);
+
+    m_kitchen_model->draw(m_basic_shader);
 
 
 }

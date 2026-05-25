@@ -1,6 +1,11 @@
 {
   "resources": {
-    "models": {},
+    "models": {
+      "overcooked_assets": {
+        "path": "overcooked_assets/overcooked_assets.obj",
+        "flip_uvs": true
+      }
+    },
     "textures": {
       "floor_texture": {
         "path": "floor_texture.png"

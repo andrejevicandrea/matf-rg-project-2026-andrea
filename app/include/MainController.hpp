@@ -11,6 +11,7 @@
 #include <engine/resources/Shader.hpp>
 #include <engine/graphics/Camera.hpp>
 #include <engine/platform/PlatformController.hpp>
+#include <engine/resources/Model.hpp>
 
 namespace app {
 
@@ -40,6 +41,7 @@ class MainController final : public engine::core::Controller {
     engine::resources::Texture *m_floor_texture = nullptr;
     engine::resources::Texture *m_wall_texture = nullptr;
     engine::graphics::Camera *m_camera = nullptr;
+    engine::resources::Model *m_kitchen_model = nullptr;
 
 };
 
