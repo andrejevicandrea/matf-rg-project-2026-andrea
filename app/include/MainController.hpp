@@ -28,8 +28,8 @@ class MainController final : public engine::core::Controller {
 
     void update() override;
 
-    unsigned m_floor_VAO = 0;
-    unsigned m_floor_VBO = 0;
+    unsigned m_plane_VAO = 0;
+    unsigned m_plane_VBO = 0;
 
     bool m_camera_mouse_enabled = false;
 

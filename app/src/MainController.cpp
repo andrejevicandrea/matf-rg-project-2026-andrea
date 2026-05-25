@@ -13,34 +13,38 @@
 
 namespace app {
 void MainController::initialize() {
-    //dodavanje poda najpre u centru ekrana kao obican beli kvadrat
-    float floor_vertices[] = {
-            // koord pozicije + teksture
-            -0.5f, -0.5f, 0.0f, 0.0f, 0.0f,
-            0.5f, -0.5f, 0.0f, 4.0f, 0.0f,
-            0.5f, 0.5f, 0.0f, 4.0f, 4.0f,
+    //floor_vertices sam koristila i za zidove pa samo rename na vertices
+    float vertices[] = {
+            // pozicija + normala + tekstura koord
+            -0.5f, -0.5f, 0.0f, 0.0f, 0.0f, 1.0f, 0.0f, 0.0f,
+            0.5f, -0.5f, 0.0f, 0.0f, 0.0f, 1.0f, 6.0f, 0.0f,
+            0.5f, 0.5f, 0.0f, 0.0f, 0.0f, 1.0f, 6.0f, 6.0f,
 
-            -0.5f, -0.5f, 0.0f, 0.0f, 0.0f,
-            0.5f, 0.5f, 0.0f, 4.0f, 4.0f,
-            -0.5f, 0.5f, 0.0f, 0.0f, 4.0f
+            0.5f, 0.5f, 0.0f, 0.0f, 0.0f, 1.0f, 6.0f, 6.0f,
+            -0.5f, 0.5f, 0.0f, 0.0f, 0.0f, 1.0f, 0.0f, 6.0f,
+            -0.5f, -0.5f, 0.0f, 0.0f, 0.0f, 1.0f, 0.0f, 0.0f
     };
     //generisanje VAO i VBO
-    glGenVertexArrays(1, &m_floor_VAO);
-    glGenBuffers(1, &m_floor_VBO);
+    glGenVertexArrays(1, &m_plane_VAO);
+    glGenBuffers(1, &m_plane_VBO);
 
     //bindovanje
-    glBindVertexArray(m_floor_VAO);
-    glBindBuffer(GL_ARRAY_BUFFER, m_floor_VBO);
+    glBindVertexArray(m_plane_VAO);
+    glBindBuffer(GL_ARRAY_BUFFER, m_plane_VBO);
 
-    glBufferData(GL_ARRAY_BUFFER, sizeof(floor_vertices), floor_vertices, GL_STATIC_DRAW);
+    glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
 
     // pozicije
-    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void *) 0);
+    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void *) 0);
     glEnableVertexAttribArray(0);
 
-    // teksture
-    glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void *) (3 * sizeof(float)));
+    //normale
+    glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void *) (3 * sizeof(float)));
     glEnableVertexAttribArray(1);
+
+    // teksture
+    glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void *) (6 * sizeof(float)));
+    glEnableVertexAttribArray(2);
 
     glBindBuffer(GL_ARRAY_BUFFER, 0);
 
@@ -86,7 +90,7 @@ void MainController::draw() {
     m_basic_shader->set_mat4("view", view);
     m_basic_shader->set_mat4("projection", projection);
 
-    glBindVertexArray(m_floor_VAO);
+    glBindVertexArray(m_plane_VAO);
 
     //Pod sa teksturom
     glm::mat4 floor_model = glm::mat4(1.0f);
@@ -97,8 +101,7 @@ void MainController::draw() {
 
     m_basic_shader->set_mat4("model", floor_model);
     // bindovanje teksture
-    m_basic_shader->set_int("useTexture", true);
-    m_basic_shader->set_int("texture_diffuse", 0);
+    m_basic_shader->set_int("texture_diffuse1", 0);
     m_floor_texture->bind(GL_TEXTURE0);
 
 
@@ -112,8 +115,7 @@ void MainController::draw() {
     back_wall_model = glm::scale(back_wall_model, glm::vec3(6.0f, 6.0f, 1.0f));
 
     m_basic_shader->set_mat4("model", back_wall_model);
-    m_basic_shader->set_int("useTexture", true);
-    m_basic_shader->set_int("texture_diffuse", 0);
+    m_basic_shader->set_int("texture_diffuse1", 0);
     m_wall_texture->bind(GL_TEXTURE0);
 
     glDrawArrays(GL_TRIANGLES, 0, 6);
@@ -126,8 +128,7 @@ void MainController::draw() {
     left_wall_model = glm::scale(left_wall_model, glm::vec3(6.0f, 6.0f, 1.0f));
 
     m_basic_shader->set_mat4("model", left_wall_model);
-    m_basic_shader->set_int("useTexture", true);
-    m_basic_shader->set_int("texture_diffuse", 0);
+    m_basic_shader->set_int("texture_diffuse1", 0);
     m_wall_texture->bind(GL_TEXTURE0);
 
     glDrawArrays(GL_TRIANGLES, 0, 6);
@@ -140,7 +141,6 @@ void MainController::draw() {
     kitchen_model = glm::scale(kitchen_model, glm::vec3(0.25f));
 
     m_basic_shader->set_mat4("model", kitchen_model);
-    m_basic_shader->set_int("useTexture", true);
 
     m_kitchen_model->draw(m_basic_shader);
 
