@@ -45,9 +45,10 @@ void MainController::initialize() {
     glBindBuffer(GL_ARRAY_BUFFER, 0);
 
     //refactorinng tako da izvucem prvo kontroler resources kao graphic sto sam i onda ucitavanje teksture i shadera
-    //inicijalizacija graphic i resources controlera
+    //inicijalizacija graphic, resources i platform controlera
     m_graphics_controller = engine::core::Controller::get<engine::graphics::GraphicsController>();
     m_resources_controller = engine::core::Controller::get<engine::resources::ResourcesController>();
+    m_platform_controller = engine::core::Controller::get<engine::platform::PlatformController>();
 
 
     m_basic_shader = m_resources_controller->shader("basic");
@@ -55,9 +56,12 @@ void MainController::initialize() {
     m_wall_texture = m_resources_controller->texture("wall_texture");
 
     //menjanje pozicije kamere
-    auto camera = m_graphics_controller->camera();
-    camera->Position = glm::vec3(3.0f, 3.0f, 5.0f);
-    camera->rotate_camera(-300.0f, -250.0f);
+    m_camera = m_graphics_controller->camera();
+    m_camera->Position = glm::vec3(2.0f, 3.0f, 7.0f);
+    m_camera->rotate_camera(-115.0f, -250.0f);
+
+    m_platform_controller->set_enable_cursor(true);
+
 }
 
 bool MainController::loop() {
@@ -126,6 +130,16 @@ void MainController::draw() {
     glDrawArrays(GL_TRIANGLES, 0, 6);
 
 
+}
+
+void MainController::update() {
+    const float dt = m_platform_controller->dt();
+    if (m_platform_controller->key(engine::platform::KeyId::KEY_W).is_down()) { m_camera->move_camera(engine::graphics::Camera::Movement::FORWARD, dt); }
+    if (m_platform_controller->key(engine::platform::KeyId::KEY_S).is_down()) { m_camera->move_camera(engine::graphics::Camera::Movement::BACKWARD, dt); }
+    if (m_platform_controller->key(engine::platform::KeyId::KEY_A).is_down()) { m_camera->move_camera(engine::graphics::Camera::Movement::LEFT, dt); }
+    if (m_platform_controller->key(engine::platform::KeyId::KEY_D).is_down()) { m_camera->move_camera(engine::graphics::Camera::Movement::RIGHT, dt); }
+    if (m_platform_controller->key(engine::platform::KeyId::KEY_E).is_down()) { m_camera->move_camera(engine::graphics::Camera::Movement::UP, dt); }
+    if (m_platform_controller->key(engine::platform::KeyId::KEY_Q).is_down()) { m_camera->move_camera(engine::graphics::Camera::Movement::DOWN, dt); }
 }
 }// app
 
