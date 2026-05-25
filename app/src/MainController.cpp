@@ -140,6 +140,13 @@ void MainController::update() {
     if (m_platform_controller->key(engine::platform::KeyId::KEY_D).is_down()) { m_camera->move_camera(engine::graphics::Camera::Movement::RIGHT, dt); }
     if (m_platform_controller->key(engine::platform::KeyId::KEY_E).is_down()) { m_camera->move_camera(engine::graphics::Camera::Movement::UP, dt); }
     if (m_platform_controller->key(engine::platform::KeyId::KEY_Q).is_down()) { m_camera->move_camera(engine::graphics::Camera::Movement::DOWN, dt); }
+
+    const auto &mouse = m_platform_controller->mouse();
+
+    if (mouse.scroll != 0.0f) {
+        m_camera->zoom(mouse.scroll);
+        m_graphics_controller->perspective_params().FOV = glm::radians(m_camera->Zoom);
+    }
 }
 }// app
 
