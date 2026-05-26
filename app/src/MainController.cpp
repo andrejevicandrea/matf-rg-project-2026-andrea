@@ -84,15 +84,25 @@ void MainController::begin_draw() { engine::graphics::OpenGL::clear_buffers(); }
 
 void MainController::end_draw() { engine::core::Controller::get<engine::platform::PlatformController>()->swap_buffers(); }
 
-void MainController::draw() {
-    m_basic_shader->use();
-
+void MainController::setup_basic_shader() const {
     glm::mat4 view = m_graphics_controller->camera()->view_matrix();
     glm::mat4 projection = m_graphics_controller->projection_matrix();
 
     m_basic_shader->set_mat4("view", view);
     m_basic_shader->set_mat4("projection", projection);
+}
 
+void MainController::draw_model(engine::resources::Model *model, const glm::vec3 &position, const glm::vec3 &scale) const {
+    glm::mat4 model_matrix = glm::mat4(1.0f);
+
+    model_matrix = glm::translate(model_matrix, position);
+    model_matrix = glm::scale(model_matrix, scale);
+
+    m_basic_shader->set_mat4("model", model_matrix);
+    model->draw(m_basic_shader);
+}
+
+void MainController::draw_room() const {
     glBindVertexArray(m_plane_VAO);
 
     //Pod sa teksturom
@@ -135,27 +145,21 @@ void MainController::draw() {
     m_wall_texture->bind(GL_TEXTURE0);
 
     glDrawArrays(GL_TRIANGLES, 0, 6);
+}
 
+void MainController::draw_kitchen() const { draw_model(m_kitchen_model, glm::vec3(3.0f, 0.02f, 3.0f), glm::vec3(0.25f)); }
 
-    //model kuhinje
-    glm::mat4 kitchen_model = glm::mat4(1.0f);
+void MainController::draw_pug() const { draw_model(m_pug_model, glm::vec3(3.0f, 0.02f, 1.5f), glm::vec3(0.5f)); }
 
-    kitchen_model = glm::translate(kitchen_model, glm::vec3(3.0f, 0.02f, 3.0f));
-    kitchen_model = glm::scale(kitchen_model, glm::vec3(0.25f));
+void MainController::draw() {
 
-    m_basic_shader->set_mat4("model", kitchen_model);
+    m_basic_shader->use();
 
-    m_kitchen_model->draw(m_basic_shader);
+    setup_basic_shader();
 
-    //model pug
-    glm::mat4 pug_model = glm::mat4(1.0f);
-
-    pug_model = glm::translate(pug_model, glm::vec3(3.0f, 0.0f, 1.5f));
-    pug_model = glm::scale(pug_model, glm::vec3(0.5f));
-
-    m_basic_shader->set_mat4("model", pug_model);
-
-    m_pug_model->draw(m_basic_shader);
+    draw_room();
+    draw_kitchen();
+    draw_pug();
 
 
 }

@@ -24,6 +24,20 @@ class MainController final : public engine::core::Controller {
 
     void end_draw() override;
 
+    void setup_basic_shader() const;
+
+    void draw_room() const;
+
+    void draw_kitchen() const;
+
+    void draw_pug() const;
+
+    void draw_model(
+            engine::resources::Model *model,
+            const glm::vec3 &position,
+            const glm::vec3 &scale
+            ) const;
+
     void draw() override;
 
     void update() override;
