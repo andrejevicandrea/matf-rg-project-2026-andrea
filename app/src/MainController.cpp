@@ -65,9 +65,11 @@ void MainController::initialize() {
     m_camera->rotate_camera(-115.0f, -250.0f);
 
     m_platform_controller->set_enable_cursor(true);
+    engine::graphics::OpenGL::enable_depth_testing();
 
     //model
     m_kitchen_model = m_resources_controller->model("overcooked_assets");
+
 
 }
 
