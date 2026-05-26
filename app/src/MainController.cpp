@@ -69,6 +69,7 @@ void MainController::initialize() {
 
     //model
     m_kitchen_model = m_resources_controller->model("overcooked_assets");
+    m_pug_model = m_resources_controller->model("overcooked_pug_character");
 
 
 }
@@ -145,6 +146,16 @@ void MainController::draw() {
     m_basic_shader->set_mat4("model", kitchen_model);
 
     m_kitchen_model->draw(m_basic_shader);
+
+    //model pug
+    glm::mat4 pug_model = glm::mat4(1.0f);
+
+    pug_model = glm::translate(pug_model, glm::vec3(3.0f, 0.0f, 1.5f));
+    pug_model = glm::scale(pug_model, glm::vec3(0.5f));
+
+    m_basic_shader->set_mat4("model", pug_model);
+
+    m_pug_model->draw(m_basic_shader);
 
 
 }

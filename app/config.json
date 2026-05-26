@@ -4,6 +4,10 @@
       "overcooked_assets": {
         "path": "overcooked_assets/overcooked_assets.obj",
         "flip_uvs": true
+      },
+      "overcooked_pug_character": {
+        "path": "overcooked_pug_character/pug.obj",
+        "flip_uvs": true
       }
     },
     "textures": {

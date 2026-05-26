@@ -42,6 +42,7 @@ class MainController final : public engine::core::Controller {
     engine::resources::Texture *m_wall_texture = nullptr;
     engine::graphics::Camera *m_camera = nullptr;
     engine::resources::Model *m_kitchen_model = nullptr;
+    engine::resources::Model *m_pug_model = nullptr;
 
 };
 
