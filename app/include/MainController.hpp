@@ -24,6 +24,8 @@ class MainController final : public engine::core::Controller {
 
     void end_draw() override;
 
+    void poll_events() override;
+
     void setup_basic_shader() const;
 
     void draw_room(const engine::resources::Shader *shader) const;
@@ -73,6 +75,7 @@ class MainController final : public engine::core::Controller {
     unsigned m_plane_VBO = 0;
 
     bool m_camera_mouse_enabled = false;
+    float m_lamps_intensity = 1.0f;
 
     engine::graphics::GraphicsController *m_graphics_controller = nullptr;
     engine::resources::ResourcesController *m_resources_controller = nullptr;

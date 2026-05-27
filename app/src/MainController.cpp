@@ -114,6 +114,14 @@ void MainController::begin_draw() { engine::graphics::OpenGL::clear_buffers(); }
 
 void MainController::end_draw() { engine::core::Controller::get<engine::platform::PlatformController>()->swap_buffers(); }
 
+void MainController::poll_events() {
+    if (m_platform_controller->key(engine::platform::KeyId::KEY_1).state() == engine::platform::Key::State::JustPressed) { m_lamps_intensity = 0.6f; }
+    if (m_platform_controller->key(engine::platform::KeyId::KEY_2).state() == engine::platform::Key::State::JustPressed) { m_lamps_intensity = 1.0f; }
+    if (m_platform_controller->key(engine::platform::KeyId::KEY_3).state() == engine::platform::Key::State::JustPressed) { m_lamps_intensity = 1.6f; }
+    if (m_platform_controller->key(engine::platform::KeyId::KEY_0).state() == engine::platform::Key::State::JustPressed) { m_lamps_intensity = 0.0f; }
+
+}
+
 void MainController::setup_basic_shader() const {
     glm::mat4 view = m_graphics_controller->camera()->view_matrix();
     glm::mat4 projection = m_graphics_controller->projection_matrix();
@@ -146,9 +154,9 @@ void MainController::setup_lighting_shader() const {
 
         m_lighting_shader->set_vec3(prefix + ".position", light.position);
 
-        m_lighting_shader->set_vec3(prefix + ".ambient", light.ambient);
-        m_lighting_shader->set_vec3(prefix + ".diffuse", light.diffuse);
-        m_lighting_shader->set_vec3(prefix + ".specular", light.specular);
+        m_lighting_shader->set_vec3(prefix + ".ambient", light.ambient * m_lamps_intensity);
+        m_lighting_shader->set_vec3(prefix + ".diffuse", light.diffuse * m_lamps_intensity);
+        m_lighting_shader->set_vec3(prefix + ".specular", light.specular * m_lamps_intensity);
 
         m_lighting_shader->set_float(prefix + ".constant", light.constant);
         m_lighting_shader->set_float(prefix + ".linear", light.linear);
