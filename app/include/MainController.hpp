@@ -26,17 +26,20 @@ class MainController final : public engine::core::Controller {
 
     void setup_basic_shader() const;
 
-    void draw_room() const;
+    void draw_room(const engine::resources::Shader *shader) const;
 
-    void draw_kitchen() const;
+    void draw_kitchen(const engine::resources::Shader *shader) const;
 
-    void draw_pug() const;
+    void draw_pug(const engine::resources::Shader *shader) const;
 
-    void draw_model(
+    static void draw_model(
             engine::resources::Model *model,
+            const engine::resources::Shader *shader,
             const glm::vec3 &position,
             const glm::vec3 &scale
-            ) const;
+            );
+
+    void setup_lighting_shader() const;
 
     void draw() override;
 
@@ -52,6 +55,7 @@ class MainController final : public engine::core::Controller {
     engine::platform::PlatformController *m_platform_controller = nullptr;
 
     engine::resources::Shader *m_basic_shader = nullptr;
+    engine::resources::Shader *m_lighting_shader = nullptr;
     engine::resources::Texture *m_floor_texture = nullptr;
     engine::resources::Texture *m_wall_texture = nullptr;
     engine::graphics::Camera *m_camera = nullptr;

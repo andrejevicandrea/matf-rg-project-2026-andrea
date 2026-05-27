@@ -56,6 +56,7 @@ void MainController::initialize() {
 
 
     m_basic_shader = m_resources_controller->shader("basic");
+    m_lighting_shader = m_resources_controller->shader("lighting_shader");
     m_floor_texture = m_resources_controller->texture("floor_texture");
     m_wall_texture = m_resources_controller->texture("wall_texture");
 
@@ -92,17 +93,25 @@ void MainController::setup_basic_shader() const {
     m_basic_shader->set_mat4("projection", projection);
 }
 
-void MainController::draw_model(engine::resources::Model *model, const glm::vec3 &position, const glm::vec3 &scale) const {
-    glm::mat4 model_matrix = glm::mat4(1.0f);
+void MainController::setup_lighting_shader() const {
+    const glm::mat4 view = m_graphics_controller->camera()->view_matrix();
+    const glm::mat4 projection = m_graphics_controller->projection_matrix();
 
-    model_matrix = glm::translate(model_matrix, position);
-    model_matrix = glm::scale(model_matrix, scale);
+    m_lighting_shader->set_mat4("view", view);
+    m_lighting_shader->set_mat4("projection", projection);
 
-    m_basic_shader->set_mat4("model", model_matrix);
-    model->draw(m_basic_shader);
+    m_lighting_shader->set_vec3("viewPos", m_camera->Position);
+
+    m_lighting_shader->set_int("material.diffuse", 0);
+    m_lighting_shader->set_float("material.shininess", 32.0f);
+
+    m_lighting_shader->set_vec3("dirLight.direction", glm::vec3(-0.2f, -1.0f, -0.3f));
+    m_lighting_shader->set_vec3("dirLight.ambient", glm::vec3(0.5f, 0.5f, 0.5f));
+    m_lighting_shader->set_vec3("dirLight.diffuse", glm::vec3(0.55f, 0.55f, 0.55f));
+    m_lighting_shader->set_vec3("dirLight.specular", glm::vec3(0.5f, 0.5f, 0.5f));
 }
 
-void MainController::draw_room() const {
+void MainController::draw_room(const engine::resources::Shader *shader) const {
     glBindVertexArray(m_plane_VAO);
 
     //Pod sa teksturom
@@ -112,9 +121,9 @@ void MainController::draw_room() const {
     floor_model = glm::rotate(floor_model, glm::radians(90.0f), glm::vec3(1.0f, 0.0f, 0.0f));
     floor_model = glm::scale(floor_model, glm::vec3(6.0f, 6.0f, 1.0f));
 
-    m_basic_shader->set_mat4("model", floor_model);
+    shader->set_mat4("model", floor_model);
     // bindovanje teksture
-    m_basic_shader->set_int("texture_diffuse1", 0);
+    shader->set_int("material.diffuse", 0);
     m_floor_texture->bind(GL_TEXTURE0);
 
 
@@ -127,8 +136,8 @@ void MainController::draw_room() const {
     back_wall_model = glm::translate(back_wall_model, glm::vec3(3.0f, 3.0f, 0.0f));
     back_wall_model = glm::scale(back_wall_model, glm::vec3(6.0f, 6.0f, 1.0f));
 
-    m_basic_shader->set_mat4("model", back_wall_model);
-    m_basic_shader->set_int("texture_diffuse1", 0);
+    shader->set_mat4("model", back_wall_model);
+    shader->set_int("texture_diffuse1", 0);
     m_wall_texture->bind(GL_TEXTURE0);
 
     glDrawArrays(GL_TRIANGLES, 0, 6);
@@ -140,26 +149,39 @@ void MainController::draw_room() const {
     left_wall_model = glm::rotate(left_wall_model, glm::radians(90.0f), glm::vec3(0.0f, 1.0f, 0.0f));
     left_wall_model = glm::scale(left_wall_model, glm::vec3(6.0f, 6.0f, 1.0f));
 
-    m_basic_shader->set_mat4("model", left_wall_model);
-    m_basic_shader->set_int("texture_diffuse1", 0);
+    shader->set_mat4("model", left_wall_model);
+    shader->set_int("texture_diffuse1", 0);
     m_wall_texture->bind(GL_TEXTURE0);
 
     glDrawArrays(GL_TRIANGLES, 0, 6);
 }
 
-void MainController::draw_kitchen() const { draw_model(m_kitchen_model, glm::vec3(3.0f, 0.02f, 3.0f), glm::vec3(0.25f)); }
+void MainController::draw_kitchen(const engine::resources::Shader *shader) const { draw_model(m_kitchen_model, shader, glm::vec3(3.0f, 0.02f, 3.0f), glm::vec3(0.25f)); }
 
-void MainController::draw_pug() const { draw_model(m_pug_model, glm::vec3(3.0f, 0.02f, 1.5f), glm::vec3(0.5f)); }
+void MainController::draw_pug(const engine::resources::Shader *shader) const { draw_model(m_pug_model, shader, glm::vec3(3.0f, 0.02f, 1.5f), glm::vec3(0.5f)); }
+
+void MainController::draw_model(engine::resources::Model *model, const engine::resources::Shader *shader, const glm::vec3 &position, const glm::vec3 &scale) {
+    glm::mat4 model_matrix = glm::mat4(1.0f);
+
+    model_matrix = glm::translate(model_matrix, position);
+    model_matrix = glm::scale(model_matrix, scale);
+
+    shader->set_mat4("model", model_matrix);
+    model->draw(shader);
+}
 
 void MainController::draw() {
+    auto active_shader = m_lighting_shader;
 
-    m_basic_shader->use();
+    active_shader->use();
 
-    setup_basic_shader();
+    setup_lighting_shader();
 
-    draw_room();
-    draw_kitchen();
-    draw_pug();
+    //setup_basic_shader();
+
+    draw_room(active_shader);
+    draw_kitchen(active_shader);
+    draw_pug(active_shader);
 
 
 }
