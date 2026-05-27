@@ -32,6 +32,8 @@ class MainController final : public engine::core::Controller {
 
     void draw_pug(const engine::resources::Shader *shader) const;
 
+    void draw_lamp(const engine::resources::Shader *shader) const;
+
     static void draw_model(
             engine::resources::Model *model,
             const engine::resources::Shader *shader,
@@ -61,6 +63,7 @@ class MainController final : public engine::core::Controller {
     engine::graphics::Camera *m_camera = nullptr;
     engine::resources::Model *m_kitchen_model = nullptr;
     engine::resources::Model *m_pug_model = nullptr;
+    engine::resources::Model *m_lamp_model = nullptr;
 
 };
 
