@@ -24,6 +24,7 @@ void main() {
 
 //#shader fragment
 #version 330 core
+#define NR_POINT_LIGHTS 2
 
 struct Material {
     sampler2D diffuse;
@@ -59,7 +60,7 @@ out vec4 FragColor;
 uniform vec3 viewPos;
 uniform Material material;
 uniform DirLight dirLight;
-uniform PointLight pointLight;
+uniform PointLight pointLights[NR_POINT_LIGHTS];
 
 vec3 calculate_dir_light(DirLight light, vec3 normal, vec3 view_dir);
 vec3 calculate_point_light(PointLight light, vec3 normal, vec3 frag_pos, vec3 view_dir);
@@ -69,7 +70,10 @@ void main() {
     vec3 view_dir = normalize(viewPos - FragPos);
 
     vec3 result = calculate_dir_light(dirLight, normal, view_dir);
-    result += calculate_point_light(pointLight, normal, FragPos, view_dir);
+    for (int i = 0; i < NR_POINT_LIGHTS; i++) {
+        result += calculate_point_light(pointLights[i], normal, FragPos, view_dir);
+    }
+
 
     FragColor = vec4(result, 1.0);
 }

@@ -41,11 +41,33 @@ class MainController final : public engine::core::Controller {
             const glm::vec3 &scale
             );
 
+    static void draw_model(
+            engine::resources::Model *model,
+            const engine::resources::Shader *shader,
+            const glm::vec3 &position,
+            const glm::vec3 &rotation,
+            const glm::vec3 &scale
+            );
+
     void setup_lighting_shader() const;
 
     void draw() override;
 
     void update() override;
+
+    struct PointLight {
+        glm::vec3 position;
+
+        glm::vec3 ambient;
+        glm::vec3 diffuse;
+        glm::vec3 specular;
+
+        float constant;
+        float linear;
+        float quadratic;
+    };
+
+    std::vector<PointLight> m_point_lights;
 
     unsigned m_plane_VAO = 0;
     unsigned m_plane_VBO = 0;
@@ -63,7 +85,8 @@ class MainController final : public engine::core::Controller {
     engine::graphics::Camera *m_camera = nullptr;
     engine::resources::Model *m_kitchen_model = nullptr;
     engine::resources::Model *m_pug_model = nullptr;
-    engine::resources::Model *m_lamp_model = nullptr;
+    engine::resources::Model *m_lamp_back_model = nullptr;
+    engine::resources::Model *m_lamp_left_model = nullptr;
 
 };
 

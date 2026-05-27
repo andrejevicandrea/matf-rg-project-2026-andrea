@@ -71,7 +71,35 @@ void MainController::initialize() {
     //model
     m_kitchen_model = m_resources_controller->model("overcooked_assets");
     m_pug_model = m_resources_controller->model("overcooked_pug_character");
-    m_lamp_model = m_resources_controller->model("wall_lamp");
+    m_lamp_back_model = m_resources_controller->model("wall_lamp");
+    m_lamp_left_model = m_resources_controller->model("wall_lamp");
+
+    //point lights
+    m_point_lights = {
+            {
+                    glm::vec3(3.0f, 2.0f, 0.35f),
+
+                    glm::vec3(0.04f, 0.032f, 0.022f),
+                    glm::vec3(0.75f, 0.55f, 0.35f),
+                    glm::vec3(0.22f, 0.17f, 0.10f),
+
+                    1.0f,
+                    0.22f,
+                    0.18f
+            },
+            {
+
+                    glm::vec3(0.35f, 2.0f, 3.0f),
+
+                    glm::vec3(0.018f, 0.015f, 0.011f),
+                    glm::vec3(0.55f, 0.42f, 0.28f),
+                    glm::vec3(0.08f, 0.06f, 0.04f),
+
+                    1.0f,
+                    0.30f,
+                    0.28f
+            }
+    };
 
 
 }
@@ -112,15 +140,21 @@ void MainController::setup_lighting_shader() const {
     m_lighting_shader->set_vec3("dirLight.specular", glm::vec3(0.5f, 0.5f, 0.5f));
 
     //setovanje za point light
-    m_lighting_shader->set_vec3("pointLight.position", glm::vec3(3.0f, 2.0f, 1.7f));
+    for (std::size_t i = 0; i < m_point_lights.size(); ++i) {
+        const auto &light = m_point_lights[i];
+        const std::string prefix = "pointLights[" + std::to_string(i) + "]";
 
-    m_lighting_shader->set_vec3("pointLight.ambient", glm::vec3(0.04f, 0.032f, 0.022f));
-    m_lighting_shader->set_vec3("pointLight.diffuse", glm::vec3(0.75f, 0.55f, 0.35f));
-    m_lighting_shader->set_vec3("pointLight.specular", glm::vec3(0.22f, 0.17f, 0.10f));
+        m_lighting_shader->set_vec3(prefix + ".position", light.position);
 
-    m_lighting_shader->set_float("pointLight.constant", 1.0f);
-    m_lighting_shader->set_float("pointLight.linear", 0.18f);
-    m_lighting_shader->set_float("pointLight.quadratic", 0.10f);
+        m_lighting_shader->set_vec3(prefix + ".ambient", light.ambient);
+        m_lighting_shader->set_vec3(prefix + ".diffuse", light.diffuse);
+        m_lighting_shader->set_vec3(prefix + ".specular", light.specular);
+
+        m_lighting_shader->set_float(prefix + ".constant", light.constant);
+        m_lighting_shader->set_float(prefix + ".linear", light.linear);
+        m_lighting_shader->set_float(prefix + ".quadratic", light.quadratic);
+    }
+
 }
 
 void MainController::draw_room(const engine::resources::Shader *shader) const {
@@ -149,7 +183,7 @@ void MainController::draw_room(const engine::resources::Shader *shader) const {
     back_wall_model = glm::scale(back_wall_model, glm::vec3(6.0f, 6.0f, 1.0f));
 
     shader->set_mat4("model", back_wall_model);
-    shader->set_int("texture_diffuse1", 0);
+    shader->set_int("materila.diffuse", 0);
     m_wall_texture->bind(GL_TEXTURE0);
 
     glDrawArrays(GL_TRIANGLES, 0, 6);
@@ -162,7 +196,7 @@ void MainController::draw_room(const engine::resources::Shader *shader) const {
     left_wall_model = glm::scale(left_wall_model, glm::vec3(6.0f, 6.0f, 1.0f));
 
     shader->set_mat4("model", left_wall_model);
-    shader->set_int("texture_diffuse1", 0);
+    shader->set_int("material.diffuse", 0);
     m_wall_texture->bind(GL_TEXTURE0);
 
     glDrawArrays(GL_TRIANGLES, 0, 6);
@@ -172,12 +206,30 @@ void MainController::draw_kitchen(const engine::resources::Shader *shader) const
 
 void MainController::draw_pug(const engine::resources::Shader *shader) const { draw_model(m_pug_model, shader, glm::vec3(3.0f, 0.02f, 1.5f), glm::vec3(0.5f)); }
 
-void MainController::draw_lamp(const engine::resources::Shader *shader) const { draw_model(m_lamp_model, shader, glm::vec3(3.0f, 2.0f, 0.1f), glm::vec3(0.02f)); }
+void MainController::draw_lamp(const engine::resources::Shader *shader) const {
+    draw_model(m_lamp_back_model, shader, glm::vec3(3.0f, 2.0f, 0.0f), glm::vec3(0.02f));
+    draw_model(m_lamp_left_model, shader, glm::vec3(0.0f, 2.0f, 3.0f), glm::vec3(0.0f, 90.0f, 0.0f), glm::vec3(0.02f));
+
+}
 
 void MainController::draw_model(engine::resources::Model *model, const engine::resources::Shader *shader, const glm::vec3 &position, const glm::vec3 &scale) {
     glm::mat4 model_matrix = glm::mat4(1.0f);
 
     model_matrix = glm::translate(model_matrix, position);
+    model_matrix = glm::scale(model_matrix, scale);
+
+    shader->set_mat4("model", model_matrix);
+    model->draw(shader);
+}
+
+void MainController::draw_model(engine::resources::Model *model, const engine::resources::Shader *shader, const glm::vec3 &position, const glm::vec3 &rotation, const glm::vec3 &scale) {
+    glm::mat4 model_matrix = glm::mat4(1.0f);
+
+    model_matrix = glm::translate(model_matrix, position);
+    model_matrix = glm::rotate(model_matrix, glm::radians(rotation.x), glm::vec3(1.0f, 0.0f, 0.0f));
+    model_matrix = glm::rotate(model_matrix, glm::radians(rotation.y), glm::vec3(0.0f, 1.0f, 0.0f));
+    model_matrix = glm::rotate(model_matrix, glm::radians(rotation.z), glm::vec3(0.0f, 0.0f, 1.0f));
+
     model_matrix = glm::scale(model_matrix, scale);
 
     shader->set_mat4("model", model_matrix);
