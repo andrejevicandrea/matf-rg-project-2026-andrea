@@ -53,6 +53,8 @@ class MainController final : public engine::core::Controller {
 
     void setup_lighting_shader() const;
 
+    void draw_burger(engine::resources::Shader *shader) const;
+
     void draw() override;
 
     void update() override;
@@ -90,6 +92,8 @@ class MainController final : public engine::core::Controller {
     engine::resources::Model *m_pug_model = nullptr;
     engine::resources::Model *m_lamp_back_model = nullptr;
     engine::resources::Model *m_lamp_left_model = nullptr;
+    engine::resources::Model *m_raw_burger_model = nullptr;
+    engine::resources::Model *m_cooked_burger_model = nullptr;
 
 };
 

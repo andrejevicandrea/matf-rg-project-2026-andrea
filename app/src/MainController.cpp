@@ -73,6 +73,8 @@ void MainController::initialize() {
     m_pug_model = m_resources_controller->model("overcooked_pug_character");
     m_lamp_back_model = m_resources_controller->model("wall_lamp");
     m_lamp_left_model = m_resources_controller->model("wall_lamp");
+    m_raw_burger_model = m_resources_controller->model("raw_burger");
+    m_cooked_burger_model = m_resources_controller->model("cooked_burger");
 
     //point lights
     m_point_lights = {
@@ -220,6 +222,11 @@ void MainController::draw_lamp(const engine::resources::Shader *shader) const {
 
 }
 
+void MainController::draw_burger(engine::resources::Shader *shader) const {
+    //draw_model(m_raw_burger_model, shader, glm::vec3(5.0f, 0.3f, 3.9f), glm::vec3(0.08f, 0.08f, 0.08f));
+    draw_model(m_cooked_burger_model, shader, glm::vec3(5.0f, 0.3f, 3.9f), glm::vec3(0.08f, 0.08f, 0.08f));
+}
+
 void MainController::draw_model(engine::resources::Model *model, const engine::resources::Shader *shader, const glm::vec3 &position, const glm::vec3 &scale) {
     glm::mat4 model_matrix = glm::mat4(1.0f);
 
@@ -257,6 +264,7 @@ void MainController::draw() {
     draw_kitchen(active_shader);
     draw_pug(active_shader);
     draw_lamp(active_shader);
+    draw_burger(active_shader);
 
 
 }
