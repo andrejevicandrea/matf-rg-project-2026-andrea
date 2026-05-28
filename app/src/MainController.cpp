@@ -122,9 +122,9 @@ void MainController::poll_events() {
     if (m_platform_controller->key(engine::platform::KeyId::KEY_3).state() == engine::platform::Key::State::JustPressed) { m_lamps_intensity = 1.6f; }
     if (m_platform_controller->key(engine::platform::KeyId::KEY_0).state() == engine::platform::Key::State::JustPressed) { m_lamps_intensity = 0.0f; }
     if (m_platform_controller->key(engine::platform::KeyId::KEY_C).state() == engine::platform::Key::State::JustPressed) {
-        //m_cooking_state = CookingEventState::LightBoosted;
-        m_cooking_state = CookingEventState::RawBurgerShown;
+        m_cooking_state = CookingEventState::LightBoosted;
         m_lamps_intensity = 1.6f;
+        m_cooking_event_start_time = 0.0f;
     }
 
 
@@ -291,6 +291,10 @@ void MainController::update() {
         m_camera->zoom(mouse.scroll);
         m_graphics_controller->perspective_params().FOV = glm::radians(m_camera->Zoom);
     }
+
+    if (m_cooking_state != CookingEventState::Idle) { m_cooking_event_elapse_time += dt; }
+
+    if (m_cooking_state == CookingEventState::LightBoosted && m_cooking_event_elapse_time >= 2.0f) { m_cooking_state = CookingEventState::RawBurgerShown; }
 }
 }// app
 

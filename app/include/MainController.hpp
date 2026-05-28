@@ -84,6 +84,8 @@ class MainController final : public engine::core::Controller {
 
     bool m_camera_mouse_enabled = false;
     float m_lamps_intensity = 1.0f;
+    float m_cooking_event_start_time = 0.0f;
+    float m_cooking_event_elapse_time = 0.0f;
 
     engine::graphics::GraphicsController *m_graphics_controller = nullptr;
     engine::resources::ResourcesController *m_resources_controller = nullptr;
