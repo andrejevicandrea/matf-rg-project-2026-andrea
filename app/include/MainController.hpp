@@ -15,6 +15,11 @@
 
 namespace app {
 
+enum class CookingEventState {
+    Idle,
+    LightBoosted
+};
+
 class MainController final : public engine::core::Controller {
     void initialize() override;
 
@@ -95,6 +100,7 @@ class MainController final : public engine::core::Controller {
     engine::resources::Model *m_raw_burger_model = nullptr;
     engine::resources::Model *m_cooked_burger_model = nullptr;
 
+    CookingEventState m_cooking_state = CookingEventState::Idle;
 };
 
 }// app

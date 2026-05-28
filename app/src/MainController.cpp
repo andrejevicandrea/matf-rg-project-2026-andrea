@@ -121,6 +121,11 @@ void MainController::poll_events() {
     if (m_platform_controller->key(engine::platform::KeyId::KEY_2).state() == engine::platform::Key::State::JustPressed) { m_lamps_intensity = 1.0f; }
     if (m_platform_controller->key(engine::platform::KeyId::KEY_3).state() == engine::platform::Key::State::JustPressed) { m_lamps_intensity = 1.6f; }
     if (m_platform_controller->key(engine::platform::KeyId::KEY_0).state() == engine::platform::Key::State::JustPressed) { m_lamps_intensity = 0.0f; }
+    if (m_platform_controller->key(engine::platform::KeyId::KEY_C).state() == engine::platform::Key::State::JustPressed) {
+        m_cooking_state = CookingEventState::LightBoosted;
+        m_lamps_intensity = 1.6f;
+    }
+
 
 }
 
@@ -264,7 +269,7 @@ void MainController::draw() {
     draw_kitchen(active_shader);
     draw_pug(active_shader);
     draw_lamp(active_shader);
-    draw_burger(active_shader);
+    //draw_burger(active_shader);
 
 
 }
