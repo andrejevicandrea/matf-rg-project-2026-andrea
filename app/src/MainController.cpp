@@ -116,6 +116,12 @@ void MainController::begin_draw() { engine::graphics::OpenGL::clear_buffers(); }
 
 void MainController::end_draw() { engine::core::Controller::get<engine::platform::PlatformController>()->swap_buffers(); }
 
+void MainController::reset_cooking_event() {
+    m_cooking_state = CookingEventState::Idle;
+    m_cooking_event_start_time = 0.0f;
+    m_cooking_event_elapse_time = 0.0f;
+}
+
 void MainController::poll_events() {
     if (m_platform_controller->key(engine::platform::KeyId::KEY_1).state() == engine::platform::Key::State::JustPressed) { m_lamps_intensity = 0.6f; }
     if (m_platform_controller->key(engine::platform::KeyId::KEY_2).state() == engine::platform::Key::State::JustPressed) { m_lamps_intensity = 1.0f; }
@@ -126,6 +132,7 @@ void MainController::poll_events() {
         m_lamps_intensity = 1.6f;
         m_cooking_event_start_time = 0.0f;
     }
+    if (m_platform_controller->key(engine::platform::KeyId::KEY_V).state() == engine::platform::Key::State::JustPressed) { reset_cooking_event(); }
 
 
 }

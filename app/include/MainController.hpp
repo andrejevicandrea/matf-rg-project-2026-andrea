@@ -32,6 +32,8 @@ class MainController final : public engine::core::Controller {
 
     void end_draw() override;
 
+    void reset_cooking_event();
+
     void poll_events() override;
 
     void setup_basic_shader() const;
