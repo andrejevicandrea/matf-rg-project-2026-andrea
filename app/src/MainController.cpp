@@ -118,8 +118,8 @@ void MainController::end_draw() { engine::core::Controller::get<engine::platform
 
 void MainController::reset_cooking_event() {
     m_cooking_state = CookingEventState::Idle;
-    m_cooking_event_start_time = 0.0f;
     m_cooking_event_elapse_time = 0.0f;
+    m_lamps_intensity = 1.0f;
 }
 
 void MainController::poll_events() {
@@ -130,7 +130,6 @@ void MainController::poll_events() {
     if (m_platform_controller->key(engine::platform::KeyId::KEY_C).state() == engine::platform::Key::State::JustPressed) {
         m_cooking_state = CookingEventState::LightBoosted;
         m_lamps_intensity = 1.6f;
-        m_cooking_event_start_time = 0.0f;
     }
     if (m_platform_controller->key(engine::platform::KeyId::KEY_V).state() == engine::platform::Key::State::JustPressed) { reset_cooking_event(); }
 
@@ -206,7 +205,7 @@ void MainController::draw_room(const engine::resources::Shader *shader) const {
     back_wall_model = glm::scale(back_wall_model, glm::vec3(6.0f, 6.0f, 1.0f));
 
     shader->set_mat4("model", back_wall_model);
-    shader->set_int("materila.diffuse", 0);
+    shader->set_int("material.diffuse", 0);
     m_wall_texture->bind(GL_TEXTURE0);
 
     glDrawArrays(GL_TRIANGLES, 0, 6);
