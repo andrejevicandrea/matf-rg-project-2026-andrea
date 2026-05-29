@@ -18,7 +18,8 @@ namespace app {
 enum class CookingEventState {
     Idle,
     LightBoosted,
-    RawBurgerShown
+    RawBurgerShown,
+    BurgerCooked
 };
 
 class MainController final : public engine::core::Controller {

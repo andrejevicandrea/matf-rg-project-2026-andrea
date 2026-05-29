@@ -220,7 +220,7 @@ void MainController::draw_room(const engine::resources::Shader *shader) const {
 
 void MainController::draw_kitchen(const engine::resources::Shader *shader) const { draw_model(m_kitchen_model, shader, glm::vec3(3.0f, 0.02f, 3.0f), glm::vec3(0.25f)); }
 
-void MainController::draw_pug(const engine::resources::Shader *shader) const { if (m_cooking_state == CookingEventState::RawBurgerShown) { draw_model(m_pug_model, shader, glm::vec3(5.5f, 0.02f, 3.5f), glm::vec3(0.0f, -25.0f, 0.0f), glm::vec3(0.5f)); } else { draw_model(m_pug_model, shader, glm::vec3(3.0f, 0.02f, 1.5f), glm::vec3(0.5f)); } }
+void MainController::draw_pug(const engine::resources::Shader *shader) const { if (m_cooking_state == CookingEventState::RawBurgerShown || m_cooking_state == CookingEventState::BurgerCooked) { draw_model(m_pug_model, shader, glm::vec3(5.5f, 0.02f, 3.5f), glm::vec3(0.0f, -25.0f, 0.0f), glm::vec3(0.5f)); } else { draw_model(m_pug_model, shader, glm::vec3(3.0f, 0.02f, 1.5f), glm::vec3(0.5f)); } }
 
 void MainController::draw_lamp(const engine::resources::Shader *shader) const {
     draw_model(m_lamp_back_model, shader, glm::vec3(3.0f, 2.0f, 0.0f), glm::vec3(0.02f));
@@ -230,8 +230,8 @@ void MainController::draw_lamp(const engine::resources::Shader *shader) const {
 
 void MainController::draw_burger(engine::resources::Shader *shader) const {
     if (m_cooking_state == CookingEventState::RawBurgerShown) { draw_model(m_raw_burger_model, shader, glm::vec3(5.0f, 0.3f, 3.9f), glm::vec3(0.08f, 0.08f, 0.08f)); }
+    if (m_cooking_state == CookingEventState::BurgerCooked) { draw_model(m_cooked_burger_model, shader, glm::vec3(5.0f, 0.3f, 3.9f), glm::vec3(0.08f, 0.08f, 0.08f)); }
 
-    //draw_model(m_cooked_burger_model, shader, glm::vec3(5.0f, 0.3f, 3.9f), glm::vec3(0.08f, 0.08f, 0.08f));
 }
 
 void MainController::draw_model(engine::resources::Model *model, const engine::resources::Shader *shader, const glm::vec3 &position, const glm::vec3 &scale) {
@@ -295,6 +295,7 @@ void MainController::update() {
     if (m_cooking_state != CookingEventState::Idle) { m_cooking_event_elapse_time += dt; }
 
     if (m_cooking_state == CookingEventState::LightBoosted && m_cooking_event_elapse_time >= 2.0f) { m_cooking_state = CookingEventState::RawBurgerShown; }
+    if (m_cooking_state == CookingEventState::RawBurgerShown && m_cooking_event_elapse_time >= 5.0f) { m_cooking_state = CookingEventState::BurgerCooked; }
 }
 }// app
 
