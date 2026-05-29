@@ -19,7 +19,8 @@ enum class CookingEventState {
     Idle,
     LightBoosted,
     RawBurgerShown,
-    BurgerCooked
+    BurgerCooked,
+    BurgerServed
 };
 
 class MainController final : public engine::core::Controller {
