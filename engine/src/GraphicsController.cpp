@@ -32,6 +32,8 @@ void GraphicsController::initialize() {
 
     platform->register_platform_event_observer(std::make_unique<GraphicsPlatformEventObserver>(this));
     CHECKED_GL_CALL(glViewport, 0, 0, platform->window()->width(), platform->window()->height());
+    OpenGL::initialize_multisample_framebuffer(m_multisample_framebuffer.m_framebuffer_id, m_multisample_framebuffer.m_color_texture_id, m_multisample_framebuffer.m_depth_stencil_renderbuffer_id, platform->window()->width(), platform->window()->height(), 4);
+
 
     IMGUI_CHECKVERSION();
     ImGui::CreateContext();
@@ -42,6 +44,7 @@ void GraphicsController::initialize() {
 }
 
 void GraphicsController::terminate() {
+    m_multisample_framebuffer.destroy();
     if (ImGui::GetCurrentContext()) {
         ImGui_ImplOpenGL3_Shutdown();
         ImGui_ImplGlfw_Shutdown();
@@ -57,9 +60,7 @@ void GraphicsPlatformEventObserver::on_window_resize(int width, int height) {
     CHECKED_GL_CALL(glViewport, 0, 0, width, height);
 }
 
-std::string_view GraphicsController::name() const {
-    return "GraphicsController";
-}
+std::string_view GraphicsController::name() const { return "GraphicsController"; }
 
 void GraphicsController::begin_gui() {
     ImGui_ImplOpenGL3_NewFrame();
