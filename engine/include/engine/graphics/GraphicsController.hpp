@@ -154,6 +154,10 @@ namespace engine::graphics {
             return m_ortho_params;
         }
 
+        void begin_draw() override;
+
+        void end_draw() override;
+
     private:
         /**
         * @brief Initializes OpenGL, ImGUI, and projection matrix params;

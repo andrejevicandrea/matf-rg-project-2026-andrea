@@ -28,10 +28,6 @@ class MainController final : public engine::core::Controller {
 
     bool loop() override;
 
-    void begin_draw() override;
-
-    void end_draw() override;
-
     void reset_cooking_event();
 
     void poll_events() override;

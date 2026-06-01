@@ -112,10 +112,6 @@ bool MainController::loop() {
     return true;
 }
 
-void MainController::begin_draw() { engine::graphics::OpenGL::clear_buffers(); }
-
-void MainController::end_draw() { engine::core::Controller::get<engine::platform::PlatformController>()->swap_buffers(); }
-
 void MainController::reset_cooking_event() {
     m_cooking_state = CookingEventState::Idle;
     m_cooking_event_elapse_time = 0.0f;

@@ -12,6 +12,19 @@
 
 namespace engine::graphics {
 
+void GraphicsController::begin_draw() {
+    OpenGL::bind_framebuffer(m_multisample_framebuffer.id());
+    OpenGL::clear_buffers();
+}
+
+void GraphicsController::end_draw() {
+    auto platform = engine::core::Controller::get<platform::PlatformController>();
+
+    OpenGL::resolve_framebuffer(m_multisample_framebuffer.id(), platform->window()->width(), platform->window()->height());
+
+    platform->swap_buffers();
+}
+
 void GraphicsController::initialize() {
     const int opengl_initialized = gladLoadGLLoader((GLADloadproc) glfwGetProcAddress);
     RG_GUARANTEE(opengl_initialized, "OpenGL failed to init!");
