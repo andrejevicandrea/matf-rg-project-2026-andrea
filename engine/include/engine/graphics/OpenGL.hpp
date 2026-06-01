@@ -134,6 +134,10 @@ namespace engine::graphics {
         */
         static void clear_buffers();
 
+        static void bind_framebuffer(uint32_t framebuffer_id);
+
+        static void resolve_framebuffer(uint32_t framebuffer_id, int32_t width, int32_t height);
+
         /**
         * @brief Retrieve the shader compilation error log message.
         * @param shader_id Shader id for which the compilation failed.

@@ -180,6 +180,15 @@ void OpenGL::disable_depth_testing() { CHECKED_GL_CALL(glDisable, GL_DEPTH_TEST)
 
 void OpenGL::clear_buffers() { CHECKED_GL_CALL(glClear, GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT); }
 
+void OpenGL::bind_framebuffer(uint32_t framebuffer_id) { CHECKED_GL_CALL(glBindFramebuffer, GL_FRAMEBUFFER, framebuffer_id); }
+
+void OpenGL::resolve_framebuffer(uint32_t framebuffer_id, int32_t width, int32_t height) {
+    CHECKED_GL_CALL(glBindFramebuffer, GL_READ_FRAMEBUFFER, framebuffer_id);                                      //citam iz mog framebuffera
+    CHECKED_GL_CALL(glBindFramebuffer, GL_DRAW_FRAMEBUFFER, 0);                                                   //upisujem tj crtam u framebuffer prozora
+    CHECKED_GL_CALL(glBlitFramebuffer, 0, 0, width, height, 0, 0, width, height, GL_COLOR_BUFFER_BIT, GL_NEAREST);//svodim vise samlova na jednu konacnu boju po pikselu
+    CHECKED_GL_CALL(glBindFramebuffer, GL_FRAMEBUFFER, 0);                                                        // default framebuffer ostavim kao aktivan
+}
+
 uint32_t face_index(std::string_view name) {
     if (name == "right") { return 0; } else if (name == "left") { return 1; } else if (name == "top") { return 2; } else if (name == "bottom") { return 3; } else if (name == "front") { return 4; } else if (name == "back") { return 5; } else {
         RG_SHOULD_NOT_REACH_HERE(
