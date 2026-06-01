@@ -25,6 +25,15 @@ void GraphicsController::end_draw() {
     platform->swap_buffers();
 }
 
+void GraphicsController::resize_multisample_framebuffer(int width, int height) {
+    if (width == 0 || height == 0) { return; }
+
+    m_multisample_framebuffer.destroy();
+
+    OpenGL::initialize_multisample_framebuffer(m_multisample_framebuffer.m_framebuffer_id, m_multisample_framebuffer.m_color_texture_id, m_multisample_framebuffer.m_depth_stencil_renderbuffer_id, width, height, m_multisample_samples);
+
+}
+
 void GraphicsController::initialize() {
     const int opengl_initialized = gladLoadGLLoader((GLADloadproc) glfwGetProcAddress);
     RG_GUARANTEE(opengl_initialized, "OpenGL failed to init!");
@@ -45,8 +54,8 @@ void GraphicsController::initialize() {
 
     platform->register_platform_event_observer(std::make_unique<GraphicsPlatformEventObserver>(this));
     CHECKED_GL_CALL(glViewport, 0, 0, platform->window()->width(), platform->window()->height());
-    OpenGL::initialize_multisample_framebuffer(m_multisample_framebuffer.m_framebuffer_id, m_multisample_framebuffer.m_color_texture_id, m_multisample_framebuffer.m_depth_stencil_renderbuffer_id, platform->window()->width(), platform->window()->height(), 4);
-
+    //OpenGL::initialize_multisample_framebuffer(m_multisample_framebuffer.m_framebuffer_id, m_multisample_framebuffer.m_color_texture_id, m_multisample_framebuffer.m_depth_stencil_renderbuffer_id, platform->window()->width(), platform->window()->height(), 4);
+    resize_multisample_framebuffer(platform->window()->width(), platform->window()->height());
 
     IMGUI_CHECKVERSION();
     ImGui::CreateContext();
@@ -66,11 +75,16 @@ void GraphicsController::terminate() {
 }
 
 void GraphicsPlatformEventObserver::on_window_resize(int width, int height) {
+    if (width <= 0 || height <= 0) { return; }
+
+
     m_graphics->perspective_params().Width = static_cast<float>(width);
     m_graphics->perspective_params().Height = static_cast<float>(height);
     m_graphics->orthographic_params().Right = static_cast<float>(width);
     m_graphics->orthographic_params().Top = static_cast<float>(height);
     CHECKED_GL_CALL(glViewport, 0, 0, width, height);
+
+    m_graphics->resize_multisample_framebuffer(width, height);
 }
 
 std::string_view GraphicsController::name() const { return "GraphicsController"; }

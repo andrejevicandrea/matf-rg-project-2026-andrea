@@ -158,6 +158,8 @@ namespace engine::graphics {
 
         void end_draw() override;
 
+        void resize_multisample_framebuffer(int width, int height);
+
     private:
         /**
         * @brief Initializes OpenGL, ImGUI, and projection matrix params;
@@ -173,6 +175,7 @@ namespace engine::graphics {
         Camera m_camera{};
         ImGuiContext *m_imgui_context{};
         MultisampleFramebuffer m_multisample_framebuffer{};
+        int m_multisample_samples{4};
     };
 
     /**
