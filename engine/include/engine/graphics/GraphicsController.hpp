@@ -175,7 +175,8 @@ namespace engine::graphics {
         Camera m_camera{};
         ImGuiContext *m_imgui_context{};
         MultisampleFramebuffer m_multisample_framebuffer{};
-        int m_multisample_samples{4};
+        int32_t m_multisample_samples{4};
+        bool m_multisample_enabled{true};
     };
 
     /**

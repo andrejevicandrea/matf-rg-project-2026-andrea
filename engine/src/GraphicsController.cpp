@@ -9,24 +9,25 @@
 #include <engine/resources/Skybox.hpp>
 #include <imgui_impl_glfw.h>
 #include <imgui_impl_opengl3.h>
+#include <engine/util/Configuration.hpp>
 
 namespace engine::graphics {
 
 void GraphicsController::begin_draw() {
-    OpenGL::bind_framebuffer(m_multisample_framebuffer.id());
+    if (m_multisample_enabled) { OpenGL::bind_framebuffer(m_multisample_framebuffer.id()); } else { OpenGL::bind_framebuffer(0); }
     OpenGL::clear_buffers();
 }
 
 void GraphicsController::end_draw() {
     auto platform = engine::core::Controller::get<platform::PlatformController>();
 
-    OpenGL::resolve_framebuffer(m_multisample_framebuffer.id(), platform->window()->width(), platform->window()->height());
+    if (m_multisample_enabled) { OpenGL::resolve_framebuffer(m_multisample_framebuffer.id(), platform->window()->width(), platform->window()->height()); }
 
     platform->swap_buffers();
 }
 
 void GraphicsController::resize_multisample_framebuffer(int width, int height) {
-    if (width == 0 || height == 0) { return; }
+    if (!m_multisample_enabled || width <= 0 || height <= 0) { return; }
 
     m_multisample_framebuffer.destroy();
 
@@ -37,6 +38,14 @@ void GraphicsController::resize_multisample_framebuffer(int width, int height) {
 void GraphicsController::initialize() {
     const int opengl_initialized = gladLoadGLLoader((GLADloadproc) glfwGetProcAddress);
     RG_GUARANTEE(opengl_initialized, "OpenGL failed to init!");
+
+    const auto &config = engine::util::Configuration::config();
+
+    if (config.contains("anti_aliasing")) {
+        const auto &anti_aliasing = config["anti_aliasing"];
+        if (anti_aliasing.contains("enabled")) { m_multisample_enabled = anti_aliasing["enabled"].get<bool>(); }
+        if (anti_aliasing.contains("samples")) { m_multisample_samples = anti_aliasing["samples"].get<int32_t>(); }
+    }
 
     auto platform = engine::core::Controller::get<platform::PlatformController>();
     auto handle = platform->window()->handle_();
@@ -55,7 +64,7 @@ void GraphicsController::initialize() {
     platform->register_platform_event_observer(std::make_unique<GraphicsPlatformEventObserver>(this));
     CHECKED_GL_CALL(glViewport, 0, 0, platform->window()->width(), platform->window()->height());
     //OpenGL::initialize_multisample_framebuffer(m_multisample_framebuffer.m_framebuffer_id, m_multisample_framebuffer.m_color_texture_id, m_multisample_framebuffer.m_depth_stencil_renderbuffer_id, platform->window()->width(), platform->window()->height(), 4);
-    resize_multisample_framebuffer(platform->window()->width(), platform->window()->height());
+    if (m_multisample_enabled) { resize_multisample_framebuffer(platform->window()->width(), platform->window()->height()); }
 
     IMGUI_CHECKVERSION();
     ImGui::CreateContext();

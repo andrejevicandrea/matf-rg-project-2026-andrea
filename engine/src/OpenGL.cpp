@@ -11,6 +11,7 @@
 #include <engine/util/Utils.hpp>
 #include <filesystem>
 #include <stb_image.h>
+#include <spdlog/spdlog.h>
 
 namespace engine::graphics {
 int32_t OpenGL::shader_type_to_opengl_type(resources::ShaderType type) {
@@ -104,6 +105,21 @@ void OpenGL::initialize_multisample_framebuffer(uint32_t &framebuffer_id, uint32
     CHECKED_GL_CALL(glGenTextures, 1, &color_texture_id);
     CHECKED_GL_CALL(glBindTexture, GL_TEXTURE_2D_MULTISAMPLE, color_texture_id);
     CHECKED_GL_CALL(glTexImage2DMultisample, GL_TEXTURE_2D_MULTISAMPLE, samples, GL_RGB, width, height, GL_TRUE);
+    int32_t actual_samples = 0;
+
+    CHECKED_GL_CALL(
+            glGetTexLevelParameteriv,
+            GL_TEXTURE_2D_MULTISAMPLE,
+            0,
+            GL_TEXTURE_SAMPLES,
+            &actual_samples
+            );
+
+    spdlog::info(
+            "Requested MSAA samples: {}, actual texture samples: {}",
+            samples,
+            actual_samples
+            );
     CHECKED_GL_CALL(glFramebufferTexture2D, GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D_MULTISAMPLE, color_texture_id, 0);
 
     CHECKED_GL_CALL(glGenRenderbuffers, 1, &depth_stencil_renderbuffer_id);
