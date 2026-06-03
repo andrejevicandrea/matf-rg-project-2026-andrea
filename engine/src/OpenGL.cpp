@@ -134,6 +134,33 @@ void OpenGL::initialize_multisample_framebuffer(uint32_t &framebuffer_id, uint32
     CHECKED_GL_CALL(glBindFramebuffer, GL_FRAMEBUFFER, 0);
 }
 
+void OpenGL::initialize_point_shadow_framebuffer(uint32_t &framebuffer_id, uint32_t &depth_cubemap_id, int32_t width, int32_t height) {
+    CHECKED_GL_CALL(glGenFramebuffers, 1, &framebuffer_id);
+
+    CHECKED_GL_CALL(glGenTextures, 1, &depth_cubemap_id);
+    CHECKED_GL_CALL(glBindTexture, GL_TEXTURE_CUBE_MAP, depth_cubemap_id);
+
+    for (uint32_t i = 0; i < 6; i++) { CHECKED_GL_CALL(glTexImage2D, GL_TEXTURE_CUBE_MAP_POSITIVE_X + i, 0, GL_DEPTH_COMPONENT, width, height, 0, GL_DEPTH_COMPONENT, GL_FLOAT, nullptr); }
+
+    CHECKED_GL_CALL(glTexParameteri, GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+    CHECKED_GL_CALL(glTexParameteri, GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+    CHECKED_GL_CALL(glTexParameteri, GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+    CHECKED_GL_CALL(glTexParameteri, GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+    CHECKED_GL_CALL(glTexParameteri, GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_R, GL_CLAMP_TO_EDGE);
+
+    CHECKED_GL_CALL(glBindFramebuffer, GL_FRAMEBUFFER, framebuffer_id);
+    CHECKED_GL_CALL(glFramebufferTexture, GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, depth_cubemap_id, 0);
+    CHECKED_GL_CALL(glDrawBuffer, GL_NONE);
+    CHECKED_GL_CALL(glReadBuffer, GL_NONE);
+
+    RG_GUARANTEE(CHECKED_GL_CALL(glCheckFramebufferStatus, GL_FRAMEBUFFER) == GL_FRAMEBUFFER_COMPLETE, "Point shadow framebuffer is not complete.");
+
+    CHECKED_GL_CALL(glBindTexture, GL_TEXTURE_CUBE_MAP, 0);
+    CHECKED_GL_CALL(glBindFramebuffer, GL_FRAMEBUFFER, 0);
+
+
+}
+
 std::string_view gl_call_error_description(GLenum error) {
     switch (error) {
         case GL_NO_ERROR: return "GL_NO_ERROR: No error has been recorded. The value of this symbolic constant is guaranteed to be 0. ";

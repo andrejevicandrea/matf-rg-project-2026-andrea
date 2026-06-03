@@ -152,6 +152,9 @@ namespace engine::graphics {
                                                        int32_t height,
                                                        int32_t samples);
 
+        static void initialize_point_shadow_framebuffer(uint32_t &framebuffer_id, uint32_t &depth_cubemap_id,
+                                                        int32_t width, int32_t height);
+
     private:
         /**
         * @brief Throws an engine::util::EngineError of type @ref engine::util::EngineError::Type::OpenGLError if an OpenGL error occurred. Used internally.
