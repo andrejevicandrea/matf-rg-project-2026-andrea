@@ -47,6 +47,12 @@ void GraphicsController::initialize() {
         if (anti_aliasing.contains("samples")) { m_multisample_samples = anti_aliasing["samples"].get<int32_t>(); }
     }
 
+    if (config.contains("point_shadows")) {
+        const auto &point_shadows = config["point_shadows"];
+        if (point_shadows.contains("enabled")) { m_point_shadow_enabled = point_shadows["enabled"].get<bool>(); }
+        if (point_shadows.contains("resolution")) { m_point_shadow_resolution = point_shadows["resolution"].get<int32_t>(); }
+    }
+
     auto platform = engine::core::Controller::get<platform::PlatformController>();
     auto handle = platform->window()->handle_();
     m_perspective_params.FOV = glm::radians(m_camera.Zoom);
@@ -65,6 +71,7 @@ void GraphicsController::initialize() {
     CHECKED_GL_CALL(glViewport, 0, 0, platform->window()->width(), platform->window()->height());
     //OpenGL::initialize_multisample_framebuffer(m_multisample_framebuffer.m_framebuffer_id, m_multisample_framebuffer.m_color_texture_id, m_multisample_framebuffer.m_depth_stencil_renderbuffer_id, platform->window()->width(), platform->window()->height(), 4);
     if (m_multisample_enabled) { resize_multisample_framebuffer(platform->window()->width(), platform->window()->height()); }
+    if (m_point_shadow_enabled) { OpenGL::initialize_point_shadow_framebuffer(m_point_shadow_framebuffer.m_framebuffer_id, m_point_shadow_framebuffer.m_depth_cubemap_id, m_point_shadow_resolution, m_point_shadow_resolution); }
 
     IMGUI_CHECKVERSION();
     ImGui::CreateContext();

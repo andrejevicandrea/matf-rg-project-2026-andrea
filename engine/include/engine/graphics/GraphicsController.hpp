@@ -10,6 +10,7 @@
 #include <engine/graphics/Camera.hpp>
 #include <engine/platform/PlatformEventObserver.hpp>
 #include <engine/graphics/MultisampleFramebuffer.hpp>
+#include <engine/graphics/PointShadowFramebuffer.hpp>
 
 struct ImGuiContext;
 
@@ -174,9 +175,14 @@ namespace engine::graphics {
         glm::mat4 m_projection_matrix{};
         Camera m_camera{};
         ImGuiContext *m_imgui_context{};
+
         MultisampleFramebuffer m_multisample_framebuffer{};
         int32_t m_multisample_samples{4};
         bool m_multisample_enabled{true};
+
+        PointShadowFramebuffer m_point_shadow_framebuffer{};
+        int32_t m_point_shadow_resolution{1024};
+        bool m_point_shadow_enabled{true};
     };
 
     /**
