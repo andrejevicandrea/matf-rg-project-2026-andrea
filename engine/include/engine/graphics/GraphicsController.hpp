@@ -161,6 +161,14 @@ namespace engine::graphics {
 
         void resize_multisample_framebuffer(int width, int height);
 
+        void begin_point_shadow_pass();
+
+        void end_point_shadow_pass();
+
+        uint32_t point_shadow_depth_cubemap_id() const {
+            return m_point_shadow_framebuffer.depth_cubemap_id();
+        }
+
     private:
         /**
         * @brief Initializes OpenGL, ImGUI, and projection matrix params;

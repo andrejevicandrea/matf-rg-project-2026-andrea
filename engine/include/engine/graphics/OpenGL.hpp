@@ -134,6 +134,8 @@ namespace engine::graphics {
         */
         static void clear_buffers();
 
+        static void clear_depth_buffer();
+
         static void bind_framebuffer(uint32_t framebuffer_id);
 
         static void resolve_framebuffer(uint32_t framebuffer_id, int32_t width, int32_t height);

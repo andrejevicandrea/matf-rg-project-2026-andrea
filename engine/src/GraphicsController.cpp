@@ -26,6 +26,22 @@ void GraphicsController::end_draw() {
     platform->swap_buffers();
 }
 
+void GraphicsController::begin_point_shadow_pass() {
+    if (!m_point_shadow_enabled) { return; }
+    OpenGL::bind_framebuffer(m_point_shadow_framebuffer.id());
+    CHECKED_GL_CALL(glViewport, 0, 0, m_point_shadow_resolution, m_point_shadow_resolution);
+    OpenGL::clear_buffers();
+}
+
+void GraphicsController::end_point_shadow_pass() {
+    if (!m_point_shadow_enabled) { return; }
+
+    const auto platform = engine::platform::PlatformController::get<platform::PlatformController>();
+    if (m_multisample_enabled) { OpenGL::bind_framebuffer(m_multisample_framebuffer.id()); } else { OpenGL::bind_framebuffer(0); }
+
+    CHECKED_GL_CALL(glViewport, 0, 0, platform->window()->width(), platform->window()->height());
+}
+
 void GraphicsController::resize_multisample_framebuffer(int width, int height) {
     if (!m_multisample_enabled || width <= 0 || height <= 0) { return; }
 
