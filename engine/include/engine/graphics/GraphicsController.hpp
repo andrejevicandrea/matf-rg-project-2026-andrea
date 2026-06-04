@@ -169,6 +169,10 @@ namespace engine::graphics {
             return m_point_shadow_framebuffer.depth_cubemap_id();
         }
 
+        bool point_shadow_enabled() const {
+            return m_point_shadow_enabled;
+        }
+
     private:
         /**
         * @brief Initializes OpenGL, ImGUI, and projection matrix params;

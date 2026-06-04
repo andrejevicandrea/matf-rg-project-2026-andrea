@@ -10,6 +10,8 @@
 #include <engine/graphics/GraphicsController.hpp>
 #include <engine/graphics/OpenGL.hpp>
 #include <engine/platform/PlatformController.hpp>
+#include <array>
+#include <glm/gtc/matrix_transform.hpp>
 
 namespace app {
 void MainController::initialize() {
@@ -57,6 +59,7 @@ void MainController::initialize() {
 
     m_basic_shader = m_resources_controller->shader("basic");
     m_lighting_shader = m_resources_controller->shader("lighting_shader");
+    m_point_shadow_shader = m_resources_controller->shader("point_shadow_shader");
     m_floor_texture = m_resources_controller->texture("floor_texture");
     m_wall_texture = m_resources_controller->texture("wall_texture");
 
@@ -175,6 +178,26 @@ void MainController::setup_lighting_shader() const {
 
 }
 
+void MainController::setup_point_shadow_shader() const {
+    const glm::vec3 light_position = m_point_lights[0].position;
+
+    const float aspect = 1.0f;
+    const float near_plane = 1.0;
+
+    const glm::mat4 shadow_projection = glm::perspective(glm::radians(90.0f), aspect, near_plane, m_point_lights[0].constant);
+    const std::array<glm::mat4, 6> shadow_transforms = {
+            shadow_projection * glm::lookAt(light_position, light_position + glm::vec3(1.0f, 0.0f, 0.0f), glm::vec3(0.0f, -1.0f, 0.0f)),
+            shadow_projection * glm::lookAt(light_position, light_position + glm::vec3(-1.0f, 0.0f, 0.0f), glm::vec3(0.0f, -1.0f, 0.0f)),
+            shadow_projection * glm::lookAt(light_position, light_position + glm::vec3(0.0f, 1.0f, 0.0f), glm::vec3(0.0f, 0.0f, 1.0f)),
+            shadow_projection * glm::lookAt(light_position, light_position + glm::vec3(0.0f, -1.0f, 0.0f), glm::vec3(0.0f, 0.0f, -1.0f)),
+            shadow_projection * glm::lookAt(light_position, light_position + glm::vec3(0.0f, 0.0f, 1.0f), glm::vec3(0.0f, -1.0f, 0.0f)),
+            shadow_projection * glm::lookAt(light_position, light_position + glm::vec3(0.0f, 0.0f, -1.0f), glm::vec3(0.0f, -1.0f, 0.0f))
+    };
+
+    for (std::size_t i = 0; i < shadow_transforms.size(); ++i) { m_point_shadow_shader->set_mat4("shadow_matrices[" + std::to_string(i) + "]", shadow_transforms[i]); }
+
+}
+
 void MainController::draw_room(const engine::resources::Shader *shader) const {
     glBindVertexArray(m_plane_VAO);
 
@@ -236,6 +259,14 @@ void MainController::draw_burger(engine::resources::Shader *shader) const {
     if (m_cooking_state == CookingEventState::BurgerServed) { draw_model(m_cooked_burger_model, shader, glm::vec3(1.0f, 0.3f, 3.9f), glm::vec3(0.08f, 0.08f, 0.08f)); }
 }
 
+void MainController::draw_scene(engine::resources::Shader *shader) const {
+    draw_room(shader);
+    draw_kitchen(shader);
+    draw_pug(shader);
+    draw_lamp(shader);
+    draw_burger(shader);
+}
+
 void MainController::draw_model(engine::resources::Model *model, const engine::resources::Shader *shader, const glm::vec3 &position, const glm::vec3 &scale) {
     glm::mat4 model_matrix = glm::mat4(1.0f);
 
@@ -261,21 +292,19 @@ void MainController::draw_model(engine::resources::Model *model, const engine::r
 }
 
 void MainController::draw() {
-    auto active_shader = m_lighting_shader;
+    if (m_graphics_controller->point_shadow_enabled()) {
+        m_graphics_controller->begin_point_shadow_pass();
 
-    active_shader->use();
+        m_point_shadow_shader->use();
+        setup_point_shadow_shader();
+        draw_scene(m_point_shadow_shader);
 
+        m_graphics_controller->end_point_shadow_pass();
+    }
+
+    m_lighting_shader->use();
     setup_lighting_shader();
-
-    //setup_basic_shader();
-
-    draw_room(active_shader);
-    draw_kitchen(active_shader);
-    draw_pug(active_shader);
-    draw_lamp(active_shader);
-    draw_burger(active_shader);
-
-
+    draw_scene(m_lighting_shader);
 }
 
 void MainController::update() {

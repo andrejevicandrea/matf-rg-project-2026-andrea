@@ -59,7 +59,11 @@ class MainController final : public engine::core::Controller {
 
     void setup_lighting_shader() const;
 
+    void setup_point_shadow_shader() const;
+
     void draw_burger(engine::resources::Shader *shader) const;
+
+    void draw_scene(engine::resources::Shader *shader) const;
 
     void draw() override;
 
@@ -85,6 +89,7 @@ class MainController final : public engine::core::Controller {
     bool m_camera_mouse_enabled = false;
     float m_lamps_intensity = 1.0f;
     float m_cooking_event_elapse_time = 0.0f;
+    float m_point_shadow_far_plane = 25.0f;
 
     engine::graphics::GraphicsController *m_graphics_controller = nullptr;
     engine::resources::ResourcesController *m_resources_controller = nullptr;
@@ -92,6 +97,7 @@ class MainController final : public engine::core::Controller {
 
     engine::resources::Shader *m_basic_shader = nullptr;
     engine::resources::Shader *m_lighting_shader = nullptr;
+    engine::resources::Shader *m_point_shadow_shader = nullptr;
     engine::resources::Texture *m_floor_texture = nullptr;
     engine::resources::Texture *m_wall_texture = nullptr;
     engine::graphics::Camera *m_camera = nullptr;
