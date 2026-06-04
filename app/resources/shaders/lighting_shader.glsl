@@ -62,17 +62,30 @@ uniform Material material;
 uniform DirLight dirLight;
 uniform PointLight pointLights[NR_POINT_LIGHTS];
 
+uniform samplerCube depth_map;
+uniform float far_plane;
+uniform bool point_shadows_enabled;
+
+float calculate_shadow(vec3 frag_pos);
 vec3 calculate_dir_light(DirLight light, vec3 normal, vec3 view_dir);
-vec3 calculate_point_light(PointLight light, vec3 normal, vec3 frag_pos, vec3 view_dir);
+vec3 calculate_point_light(PointLight light, vec3 normal, vec3 frag_pos, vec3 view_dir, float shadow);
 
 void main() {
     vec3 normal = normalize(Normal);
     vec3 view_dir = normalize(viewPos - FragPos);
 
     vec3 result = calculate_dir_light(dirLight, normal, view_dir);
-    for (int i = 0; i < NR_POINT_LIGHTS; i++) {
-        result += calculate_point_light(pointLights[i], normal, FragPos, view_dir);
+    float shadow = calculate_shadow(FragPos);
+
+
+    result += calculate_point_light(pointLights[0], normal, FragPos, view_dir, shadow);
+
+    for (int i = 1; i < NR_POINT_LIGHTS; i++) {
+        result += calculate_point_light(pointLights[i], normal, FragPos, view_dir, 0.0);
     }
+
+    //float shadow_strength = 0.3;
+    //result *= mix(1.0, 1.0 - shadow_strength, shadow);
 
 
     FragColor = vec4(result, 1.0);
@@ -96,7 +109,7 @@ vec3 calculate_dir_light(DirLight light, vec3 normal, vec3 view_dir) {
     return ambient + diffuse + specular;
 }
 
-vec3 calculate_point_light(PointLight light, vec3 normal, vec3 frag_pos, vec3 view_dir) {
+vec3 calculate_point_light(PointLight light, vec3 normal, vec3 frag_pos, vec3 view_dir, float shadow) {
     vec3 texture_color = texture(material.diffuse, TexCoords).rgb;
     vec3 light_dir = normalize(light.position - frag_pos);
 
@@ -119,8 +132,24 @@ vec3 calculate_point_light(PointLight light, vec3 normal, vec3 frag_pos, vec3 vi
     diffuse *= attenuation;
     specular *= attenuation;
 
-    return ambient + diffuse + specular;
+    return ambient + (1.0 - shadow) * (diffuse + specular);
 
+}
+float calculate_shadow(vec3 frag_pos) {
+    if (!point_shadows_enabled) {
+        return 0.0;
+    }
+
+    vec3 frag_to_light = frag_pos - pointLights[0].position;
+
+    float closest_depth = texture(depth_map, frag_to_light).r;
+    closest_depth *= far_plane;
+
+    float current_depth = length(frag_to_light);
+
+    float bias = 0.05;
+
+    return current_depth - bias > closest_depth ? 1.0 : 0.0;
 
 }
 

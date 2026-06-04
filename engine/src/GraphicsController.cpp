@@ -99,6 +99,7 @@ void GraphicsController::initialize() {
 
 void GraphicsController::terminate() {
     m_multisample_framebuffer.destroy();
+    m_point_shadow_framebuffer.destroy();
     if (ImGui::GetCurrentContext()) {
         ImGui_ImplOpenGL3_Shutdown();
         ImGui_ImplGlfw_Shutdown();

@@ -154,6 +154,10 @@ void MainController::setup_lighting_shader() const {
 
     m_lighting_shader->set_int("material.diffuse", 0);
     m_lighting_shader->set_float("material.shininess", 32.0f);
+    m_lighting_shader->set_int("depth_map", 15);
+    m_lighting_shader->set_float("far_plane", m_point_shadow_far_plane);
+    m_lighting_shader->set_bool("point_shadows_enabled", m_graphics_controller->point_shadow_enabled());
+    if (m_graphics_controller->point_shadow_enabled()) { m_graphics_controller->bind_point_shadow_cubemap(); }
 
     m_lighting_shader->set_vec3("dirLight.direction", glm::vec3(-0.2f, -1.0f, -0.3f));
     m_lighting_shader->set_vec3("dirLight.ambient", glm::vec3(0.5f, 0.5f, 0.5f));
@@ -182,9 +186,9 @@ void MainController::setup_point_shadow_shader() const {
     const glm::vec3 light_position = m_point_lights[0].position;
 
     const float aspect = 1.0f;
-    const float near_plane = 1.0;
+    const float near_plane = 1.0f;
 
-    const glm::mat4 shadow_projection = glm::perspective(glm::radians(90.0f), aspect, near_plane, m_point_lights[0].constant);
+    const glm::mat4 shadow_projection = glm::perspective(glm::radians(90.0f), aspect, near_plane, m_point_shadow_far_plane);
     const std::array<glm::mat4, 6> shadow_transforms = {
             shadow_projection * glm::lookAt(light_position, light_position + glm::vec3(1.0f, 0.0f, 0.0f), glm::vec3(0.0f, -1.0f, 0.0f)),
             shadow_projection * glm::lookAt(light_position, light_position + glm::vec3(-1.0f, 0.0f, 0.0f), glm::vec3(0.0f, -1.0f, 0.0f)),
@@ -195,7 +199,8 @@ void MainController::setup_point_shadow_shader() const {
     };
 
     for (std::size_t i = 0; i < shadow_transforms.size(); ++i) { m_point_shadow_shader->set_mat4("shadow_matrices[" + std::to_string(i) + "]", shadow_transforms[i]); }
-
+    m_point_shadow_shader->set_vec3("light_position", light_position);
+    m_point_shadow_shader->set_float("far_plane", m_point_shadow_far_plane);
 }
 
 void MainController::draw_room(const engine::resources::Shader *shader) const {

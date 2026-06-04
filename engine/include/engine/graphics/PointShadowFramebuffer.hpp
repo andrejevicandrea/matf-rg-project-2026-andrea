@@ -17,6 +17,8 @@ public:
     uint32_t id() { return m_framebuffer_id; }
     uint32_t depth_cubemap_id() const { return m_depth_cubemap_id; }
 
+    void bind_depth_cubemap() const;
+
 private:
     PointShadowFramebuffer() = default;
 
