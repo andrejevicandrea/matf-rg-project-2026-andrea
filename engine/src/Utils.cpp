@@ -9,30 +9,18 @@
 namespace engine::util {
 static bool g_tracing = true;
 
-void tracing_on() {
-    g_tracing = true;
-}
+void tracing_on() { g_tracing = true; }
 
-void tracing_off() {
-    g_tracing = false;
-}
+void tracing_off() { g_tracing = false; }
 
-void trace(std::source_location location) {
-    if (g_tracing) {
-        spdlog::info("{}, in {}:{}", location.function_name(), location.file_name(), location.line());
-    }
-}
+void trace(std::source_location location) { if (g_tracing) { spdlog::info("{}, in {}:{}", location.function_name(), location.file_name(), location.line()); } }
 
 void Configuration::initialize() {
     auto config_path = get_config_path();
     std::ifstream f(config_path);
-    if (!f.is_open()) {
-        throw EngineError(EngineError::Type::FileNotFound, std::format("Failed to load configuration file {}", config_path.string()));
-    }
+    if (!f.is_open()) { throw EngineError(EngineError::Type::FileNotFound, std::format("Failed to load configuration file {}", config_path.string())); }
 
-    try {
-        m_config = json::parse(f);
-    } catch (const std::exception &e) {
+    try { m_config = json::parse(f); } catch (const std::exception &e) {
         std::string msg = std::format("Error \"{}\" occurred while parsing the configuration file. "
                                       "Please make sure that the file is in the correct json format.",
                                       e.what());
@@ -45,9 +33,7 @@ std::filesystem::path Configuration::get_config_path() {
     auto config_arg = ArgParser::instance()->arg<std::string>("--configuration", "config.json");
     if (!config_arg.has_value() || !exists(std::filesystem::path(config_arg.value()))) {
         std::ofstream f(CONFIG_FILE_NAME.data());
-        if (!f.is_open()) {
-            throw EngineError(EngineError::Type::ConfigurationError, std::format("Failed to open configuration file {}", CONFIG_FILE_NAME));
-        }
+        if (!f.is_open()) { throw EngineError(EngineError::Type::ConfigurationError, std::format("Failed to open configuration file {}", CONFIG_FILE_NAME)); }
         auto config = create_default();
         f << config.dump(4);
         return CONFIG_FILE_NAME;
@@ -60,6 +46,8 @@ nlohmann::json Configuration::create_default() {
     default_config["window"]["width"] = 800;
     default_config["window"]["height"] = 600;
     default_config["window"]["title"] = "Hello, window!";
+    default_config["anti_aliasing"]["samples"] = 4;
+    default_config["anti_aliasing"]["enabled"] = true;
     return default_config;
 }
 
@@ -68,9 +56,7 @@ Configuration *Configuration::instance() {
     return &configuration;
 }
 
-Configuration::json &Configuration::config() {
-    return instance()->m_config;
-}
+Configuration::json &Configuration::config() { return instance()->m_config; }
 
 ArgParser *ArgParser::instance() {
     static ArgParser arg_parser;
