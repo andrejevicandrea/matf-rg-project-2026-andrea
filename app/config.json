@@ -1,45 +1,11 @@
 {
-  "anti_aliasing": {
-    "samples": 4,
-    "enabled": true
-  },
-  "point_shadows": {
-    "resolution": 1024,
-    "enabled": true
-  },
   "resources": {
     "models": {
-      "overcooked_assets": {
-        "path": "overcooked_assets/overcooked_assets.obj",
-        "flip_uvs": true
-      },
-      "overcooked_pug_character": {
-        "path": "overcooked_pug_character/pug.obj",
-        "flip_uvs": true
-      },
-      "wall_lamp": {
-        "path": "wall_lamp/eb_sconce_light_01.obj",
-        "flip_uvs": true
-      },
-      "raw_burger": {
-        "path": "raw_burger/scene.gltf"
-      },
-      "cooked_burger": {
-        "path": "cooked_burger/scene.gltf"
-      }
-    },
-    "textures": {
-      "floor_texture": {
-        "path": "floor_texture.png"
-      },
-      "wall_texture": {
-        "path": "wall_texture.jpg"
-      }
     }
   },
   "window": {
     "height": 600,
-    "title": "Overcooked",
+    "title": "Hello, window!",
     "width": 800
   }
 }
