@@ -3,10 +3,6 @@
 //
 
 #include "MainController.hpp"
-
-#include "../../engine/libs/glad/include/glad/glad.h"
-
-#include <assimp/light.h>
 #include <engine/graphics/GraphicsController.hpp>
 #include <engine/graphics/OpenGL.hpp>
 #include <engine/platform/PlatformController.hpp>
@@ -26,29 +22,8 @@ void MainController::initialize() {
             -0.5f, 0.5f, 0.0f, 0.0f, 0.0f, 1.0f, 0.0f, 6.0f,
             -0.5f, -0.5f, 0.0f, 0.0f, 0.0f, 1.0f, 0.0f, 0.0f
     };
-    //generisanje VAO i VBO
-    glGenVertexArrays(1, &m_plane_VAO);
-    glGenBuffers(1, &m_plane_VBO);
 
-    //bindovanje
-    glBindVertexArray(m_plane_VAO);
-    glBindBuffer(GL_ARRAY_BUFFER, m_plane_VBO);
-
-    glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
-
-    // pozicije
-    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void *) 0);
-    glEnableVertexAttribArray(0);
-
-    //normale
-    glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void *) (3 * sizeof(float)));
-    glEnableVertexAttribArray(1);
-
-    // teksture
-    glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void *) (6 * sizeof(float)));
-    glEnableVertexAttribArray(2);
-
-    glBindBuffer(GL_ARRAY_BUFFER, 0);
+    engine::graphics::OpenGL::initialize_textured_quad(m_plane_vao, m_plane_vbo, vertices, sizeof(vertices));
 
     //refactorinng tako da izvucem prvo kontroler resources kao graphic sto sam i onda ucitavanje teksture i shadera
     //inicijalizacija graphic, resources i platform controlera
@@ -204,7 +179,6 @@ void MainController::setup_point_shadow_shader() const {
 }
 
 void MainController::draw_room(const engine::resources::Shader *shader) const {
-    glBindVertexArray(m_plane_VAO);
 
     //Pod sa teksturom
     glm::mat4 floor_model = glm::mat4(1.0f);
@@ -216,10 +190,9 @@ void MainController::draw_room(const engine::resources::Shader *shader) const {
     shader->set_mat4("model", floor_model);
     // bindovanje teksture
     shader->set_int("material.diffuse", 0);
-    m_floor_texture->bind(GL_TEXTURE0);
 
 
-    glDrawArrays(GL_TRIANGLES, 0, 6);
+    engine::graphics::OpenGL::draw_textured_quad(m_plane_vao, m_floor_texture->id(), 0);
 
     //zadnji zid
 
@@ -230,9 +203,8 @@ void MainController::draw_room(const engine::resources::Shader *shader) const {
 
     shader->set_mat4("model", back_wall_model);
     shader->set_int("material.diffuse", 0);
-    m_wall_texture->bind(GL_TEXTURE0);
 
-    glDrawArrays(GL_TRIANGLES, 0, 6);
+    engine::graphics::OpenGL::draw_textured_quad(m_plane_vao, m_wall_texture->id(), 0);
 
     //levi zid
 
@@ -243,9 +215,8 @@ void MainController::draw_room(const engine::resources::Shader *shader) const {
 
     shader->set_mat4("model", left_wall_model);
     shader->set_int("material.diffuse", 0);
-    m_wall_texture->bind(GL_TEXTURE0);
 
-    glDrawArrays(GL_TRIANGLES, 0, 6);
+    engine::graphics::OpenGL::draw_textured_quad(m_plane_vao, m_wall_texture->id(), 0);
 }
 
 void MainController::draw_kitchen(const engine::resources::Shader *shader) const { draw_model(m_kitchen_model, shader, glm::vec3(3.0f, 0.02f, 3.0f), glm::vec3(0.25f)); }

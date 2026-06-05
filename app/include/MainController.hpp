@@ -83,8 +83,8 @@ class MainController final : public engine::core::Controller {
 
     std::vector<PointLight> m_point_lights;
 
-    unsigned m_plane_VAO = 0;
-    unsigned m_plane_VBO = 0;
+    unsigned m_plane_vao = 0;
+    unsigned m_plane_vbo = 0;
 
     bool m_camera_mouse_enabled = false;
     float m_lamps_intensity = 1.0f;

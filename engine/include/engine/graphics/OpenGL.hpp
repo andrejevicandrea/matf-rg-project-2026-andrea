@@ -157,6 +157,13 @@ namespace engine::graphics {
         static void initialize_point_shadow_framebuffer(uint32_t &framebuffer_id, uint32_t &depth_cubemap_id,
                                                         int32_t width, int32_t height);
 
+        static void initialize_textured_quad(uint32_t &vao, uint32_t &vbo, const float *vertices,
+                                             std::size_t vertices_size);
+
+        static void draw_textured_quad(uint32_t vao, uint32_t texture_id, uint32_t texture_unit);
+
+        static void destroy_textured_quad(uint32_t &vao, uint32_t &vbo);
+
     private:
         /**
         * @brief Throws an engine::util::EngineError of type @ref engine::util::EngineError::Type::OpenGLError if an OpenGL error occurred. Used internally.

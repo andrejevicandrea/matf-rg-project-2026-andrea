@@ -161,6 +161,42 @@ void OpenGL::initialize_point_shadow_framebuffer(uint32_t &framebuffer_id, uint3
 
 }
 
+void OpenGL::initialize_textured_quad(uint32_t &vao, uint32_t &vbo, const float *vertices, std::size_t vertices_size) {
+
+    CHECKED_GL_CALL(glGenVertexArrays, 1, &vao);
+    CHECKED_GL_CALL(glGenBuffers, 1, &vbo);
+
+    CHECKED_GL_CALL(glBindVertexArray, vao);
+    CHECKED_GL_CALL(glBindBuffer, GL_ARRAY_BUFFER, vbo);
+
+    CHECKED_GL_CALL(glBufferData, GL_ARRAY_BUFFER, vertices_size, vertices, GL_STATIC_DRAW);
+
+    CHECKED_GL_CALL(glVertexAttribPointer, 0, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)0);
+    CHECKED_GL_CALL(glEnableVertexAttribArray, 0);
+
+    CHECKED_GL_CALL(glVertexAttribPointer, 1, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void *)(3 * sizeof(float)));
+    CHECKED_GL_CALL(glEnableVertexAttribArray, 1);
+
+    CHECKED_GL_CALL(glVertexAttribPointer, 2, 2, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void *)(6 * sizeof(float)));
+    CHECKED_GL_CALL(glEnableVertexAttribArray, 2);
+
+    CHECKED_GL_CALL(glBindBuffer, GL_ARRAY_BUFFER, 0);
+    CHECKED_GL_CALL(glBindVertexArray, 0);
+}
+
+void OpenGL::draw_textured_quad(uint32_t vao, uint32_t texture_id, uint32_t texture_unit) {
+    RG_GUARANTEE(texture_unit <= 31, "Texture unit out of range");
+
+    CHECKED_GL_CALL(glActiveTexture, GL_TEXTURE0 + texture_unit);
+    CHECKED_GL_CALL(glBindTexture, GL_TEXTURE_2D, texture_id);
+
+    CHECKED_GL_CALL(glBindVertexArray, vao);
+    CHECKED_GL_CALL(glDrawArrays, GL_TRIANGLES, 0, 6);
+    CHECKED_GL_CALL(glBindVertexArray, 0);
+}
+
+void OpenGL::destroy_textured_quad(uint32_t &vao, uint32_t &vbo) {}
+
 std::string_view gl_call_error_description(GLenum error) {
     switch (error) {
         case GL_NO_ERROR: return "GL_NO_ERROR: No error has been recorded. The value of this symbolic constant is guaranteed to be 0. ";
