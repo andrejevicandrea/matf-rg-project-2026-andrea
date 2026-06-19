@@ -10,8 +10,8 @@
 #include <engine/util/Errors.hpp>
 #include <engine/util/Utils.hpp>
 #include <filesystem>
-#include <stb_image.h>
 #include <spdlog/spdlog.h>
+#include <stb_image.h>
 
 namespace engine::graphics {
 int32_t OpenGL::shader_type_to_opengl_type(resources::ShaderType type) {
@@ -62,7 +62,7 @@ uint32_t OpenGL::init_skybox_cube() {
     static unsigned int skybox_vao = 0;
     if (skybox_vao != 0) { return skybox_vao; }
     float vertices[] = {
-            // clang-format off
+// clang-format off
             #include <skybox_vertices.include>
             // clang-format on
     };
@@ -112,14 +112,12 @@ void OpenGL::initialize_multisample_framebuffer(uint32_t &framebuffer_id, uint32
             GL_TEXTURE_2D_MULTISAMPLE,
             0,
             GL_TEXTURE_SAMPLES,
-            &actual_samples
-            );
+            &actual_samples);
 
     spdlog::info(
             "Requested MSAA samples: {}, actual texture samples: {}",
             samples,
-            actual_samples
-            );
+            actual_samples);
     CHECKED_GL_CALL(glFramebufferTexture2D, GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D_MULTISAMPLE, color_texture_id, 0);
 
     CHECKED_GL_CALL(glGenRenderbuffers, 1, &depth_stencil_renderbuffer_id);
@@ -157,8 +155,6 @@ void OpenGL::initialize_point_shadow_framebuffer(uint32_t &framebuffer_id, uint3
 
     CHECKED_GL_CALL(glBindTexture, GL_TEXTURE_CUBE_MAP, 0);
     CHECKED_GL_CALL(glBindFramebuffer, GL_FRAMEBUFFER, 0);
-
-
 }
 
 void OpenGL::initialize_textured_quad(uint32_t &vao, uint32_t &vbo, const float *vertices, std::size_t vertices_size) {
@@ -171,13 +167,13 @@ void OpenGL::initialize_textured_quad(uint32_t &vao, uint32_t &vbo, const float 
 
     CHECKED_GL_CALL(glBufferData, GL_ARRAY_BUFFER, vertices_size, vertices, GL_STATIC_DRAW);
 
-    CHECKED_GL_CALL(glVertexAttribPointer, 0, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)0);
+    CHECKED_GL_CALL(glVertexAttribPointer, 0, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void *) 0);
     CHECKED_GL_CALL(glEnableVertexAttribArray, 0);
 
-    CHECKED_GL_CALL(glVertexAttribPointer, 1, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void *)(3 * sizeof(float)));
+    CHECKED_GL_CALL(glVertexAttribPointer, 1, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void *) (3 * sizeof(float)));
     CHECKED_GL_CALL(glEnableVertexAttribArray, 1);
 
-    CHECKED_GL_CALL(glVertexAttribPointer, 2, 2, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void *)(6 * sizeof(float)));
+    CHECKED_GL_CALL(glVertexAttribPointer, 2, 2, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void *) (6 * sizeof(float)));
     CHECKED_GL_CALL(glEnableVertexAttribArray, 2);
 
     CHECKED_GL_CALL(glBindBuffer, GL_ARRAY_BUFFER, 0);
@@ -204,7 +200,7 @@ std::string_view gl_call_error_description(GLenum error) {
         case GL_INVALID_VALUE: return "GL_INVALID_VALUE: A numeric argument is out of range. The offending command is ignored and has no other side effect than to set the error flag.  ";
         case GL_INVALID_OPERATION: return "GL_INVALID_OPERATION: The specified operation is not allowed in the current state. The offending command is ignored and has no other side effect than to set the error flag.  ";
         case GL_INVALID_FRAMEBUFFER_OPERATION: return "GL_INVALID_FRAMEBUFFER_OPERATION: The framebuffer object is not complete."
-                    "The offending command is ignored and has no other side effect than to set the error flag.";
+                                                      "The offending command is ignored and has no other side effect than to set the error flag.";
         case GL_OUT_OF_MEMORY: return "GL_OUT_OF_MEMORY: There is not enough memory left to execute the command. The state of the GL is undefined, except for the state of the error flags, after this error is recorded. . ";
         default: return "No Description";
     }
@@ -269,7 +265,19 @@ void OpenGL::resolve_framebuffer(uint32_t framebuffer_id, int32_t width, int32_t
 }
 
 uint32_t face_index(std::string_view name) {
-    if (name == "right") { return 0; } else if (name == "left") { return 1; } else if (name == "top") { return 2; } else if (name == "bottom") { return 3; } else if (name == "front") { return 4; } else if (name == "back") { return 5; } else {
+    if (name == "right") {
+        return 0;
+    } else if (name == "left") {
+        return 1;
+    } else if (name == "top") {
+        return 2;
+    } else if (name == "bottom") {
+        return 3;
+    } else if (name == "front") {
+        return 4;
+    } else if (name == "back") {
+        return 5;
+    } else {
         RG_SHOULD_NOT_REACH_HERE(
                 "Unknown face name: {}. The cubemap textures should be named: right, left, top, bottom, front, back; by their respective faces in the cubemap. The extension of the image file is ignored.",
                 name);

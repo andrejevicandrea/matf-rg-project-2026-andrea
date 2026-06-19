@@ -1,5 +1,5 @@
-#include <engine/graphics/OpenGL.hpp>
 #include <engine/graphics/MultisampleFramebuffer.hpp>
+#include <engine/graphics/OpenGL.hpp>
 #include <glad/glad.h>
 
 namespace engine::graphics {
@@ -19,5 +19,4 @@ void MultisampleFramebuffer::destroy() {
         m_depth_stencil_renderbuffer_id = 0;
     }
 }
-}
-
+}// namespace engine::graphics

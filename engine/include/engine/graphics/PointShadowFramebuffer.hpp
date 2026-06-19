@@ -25,10 +25,10 @@ private:
     uint32_t m_framebuffer_id{0};
     uint32_t m_depth_cubemap_id{0};
 
-    PointShadowFramebuffer(const uint32_t framebuffer_id, const uint32_t depth_cubemap_id): m_framebuffer_id(framebuffer_id)
-                                                                                        , m_depth_cubemap_id(depth_cubemap_id) {}
-
+    PointShadowFramebuffer(const uint32_t framebuffer_id, const uint32_t depth_cubemap_id)
+        : m_framebuffer_id(framebuffer_id)
+        , m_depth_cubemap_id(depth_cubemap_id) {}
 };
-}
+}// namespace engine::graphics
 
-#endif //POINTSHADOWFRAMEBUFFER_HPP
+#endif//POINTSHADOWFRAMEBUFFER_HPP

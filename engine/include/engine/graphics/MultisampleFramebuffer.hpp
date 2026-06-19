@@ -25,11 +25,11 @@ private:
     uint32_t m_color_texture_id{0};
     uint32_t m_depth_stencil_renderbuffer_id{0};
 
-    MultisampleFramebuffer(const uint32_t framebuffer_id, const uint32_t color_texture_id, const uint32_t depth_stencil_renderbuffer_id): m_framebuffer_id(framebuffer_id)
-                                                                                                                                      , m_color_texture_id(color_texture_id)
-                                                                                                                                      , m_depth_stencil_renderbuffer_id(depth_stencil_renderbuffer_id) {}
-
+    MultisampleFramebuffer(const uint32_t framebuffer_id, const uint32_t color_texture_id, const uint32_t depth_stencil_renderbuffer_id)
+        : m_framebuffer_id(framebuffer_id)
+        , m_color_texture_id(color_texture_id)
+        , m_depth_stencil_renderbuffer_id(depth_stencil_renderbuffer_id) {}
 };
-}
+}// namespace engine::graphics
 
-#endif //MULTISAMPLEFRAMEBUFFER_HPP
+#endif//MULTISAMPLEFRAMEBUFFER_HPP

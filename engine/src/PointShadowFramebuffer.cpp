@@ -21,4 +21,4 @@ void PointShadowFramebuffer::bind_depth_cubemap() const {
     CHECKED_GL_CALL(glBindTexture, GL_TEXTURE_CUBE_MAP, m_depth_cubemap_id);
 }
 
-}
+}// namespace engine::graphics

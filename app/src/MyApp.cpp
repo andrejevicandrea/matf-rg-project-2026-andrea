@@ -16,4 +16,4 @@ void ::app::MyApp::app_setup() {
     auto main_controller = register_controller<app::MainController>();
     main_controller->after(engine::core::Controller::get<engine::core::EngineControllersEnd>());
 }
-}// app
+}// namespace app

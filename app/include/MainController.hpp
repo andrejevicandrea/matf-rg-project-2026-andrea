@@ -5,13 +5,13 @@
 #ifndef MAINCONTROLLER_HPP
 #define MAINCONTROLLER_HPP
 #include <engine/core/Controller.hpp>
-#include <engine/graphics/GraphicsController.hpp>
-#include <engine/resources/ResourcesController.hpp>
-#include <engine/resources/Texture.hpp>
-#include <engine/resources/Shader.hpp>
 #include <engine/graphics/Camera.hpp>
+#include <engine/graphics/GraphicsController.hpp>
 #include <engine/platform/PlatformController.hpp>
 #include <engine/resources/Model.hpp>
+#include <engine/resources/ResourcesController.hpp>
+#include <engine/resources/Shader.hpp>
+#include <engine/resources/Texture.hpp>
 
 namespace app {
 
@@ -46,16 +46,14 @@ class MainController final : public engine::core::Controller {
             engine::resources::Model *model,
             const engine::resources::Shader *shader,
             const glm::vec3 &position,
-            const glm::vec3 &scale
-            );
+            const glm::vec3 &scale);
 
     static void draw_model(
             engine::resources::Model *model,
             const engine::resources::Shader *shader,
             const glm::vec3 &position,
             const glm::vec3 &rotation,
-            const glm::vec3 &scale
-            );
+            const glm::vec3 &scale);
 
     void setup_lighting_shader() const;
 
@@ -111,6 +109,6 @@ class MainController final : public engine::core::Controller {
     CookingEventState m_cooking_state = CookingEventState::Idle;
 };
 
-}// app
+}// namespace app
 
-#endif //MAINCONTROLLER_HPP
+#endif//MAINCONTROLLER_HPP

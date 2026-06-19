@@ -7,14 +7,18 @@
 #include <engine/graphics/OpenGL.hpp>
 #include <engine/platform/PlatformController.hpp>
 #include <engine/resources/Skybox.hpp>
+#include <engine/util/Configuration.hpp>
 #include <imgui_impl_glfw.h>
 #include <imgui_impl_opengl3.h>
-#include <engine/util/Configuration.hpp>
 
 namespace engine::graphics {
 
 void GraphicsController::begin_draw() {
-    if (m_multisample_enabled) { OpenGL::bind_framebuffer(m_multisample_framebuffer.id()); } else { OpenGL::bind_framebuffer(0); }
+    if (m_multisample_enabled) {
+        OpenGL::bind_framebuffer(m_multisample_framebuffer.id());
+    } else {
+        OpenGL::bind_framebuffer(0);
+    }
     OpenGL::clear_buffers();
 }
 
@@ -37,7 +41,11 @@ void GraphicsController::end_point_shadow_pass() {
     if (!m_point_shadow_enabled) { return; }
 
     const auto platform = engine::platform::PlatformController::get<platform::PlatformController>();
-    if (m_multisample_enabled) { OpenGL::bind_framebuffer(m_multisample_framebuffer.id()); } else { OpenGL::bind_framebuffer(0); }
+    if (m_multisample_enabled) {
+        OpenGL::bind_framebuffer(m_multisample_framebuffer.id());
+    } else {
+        OpenGL::bind_framebuffer(0);
+    }
 
     CHECKED_GL_CALL(glViewport, 0, 0, platform->window()->width(), platform->window()->height());
 }
@@ -48,7 +56,6 @@ void GraphicsController::resize_multisample_framebuffer(int width, int height) {
     m_multisample_framebuffer.destroy();
 
     OpenGL::initialize_multisample_framebuffer(m_multisample_framebuffer.m_framebuffer_id, m_multisample_framebuffer.m_color_texture_id, m_multisample_framebuffer.m_depth_stencil_renderbuffer_id, width, height, m_multisample_samples);
-
 }
 
 void GraphicsController::initialize() {

@@ -13,14 +13,18 @@ void tracing_on() { g_tracing = true; }
 
 void tracing_off() { g_tracing = false; }
 
-void trace(std::source_location location) { if (g_tracing) { spdlog::info("{}, in {}:{}", location.function_name(), location.file_name(), location.line()); } }
+void trace(std::source_location location) {
+    if (g_tracing) { spdlog::info("{}, in {}:{}", location.function_name(), location.file_name(), location.line()); }
+}
 
 void Configuration::initialize() {
     auto config_path = get_config_path();
     std::ifstream f(config_path);
     if (!f.is_open()) { throw EngineError(EngineError::Type::FileNotFound, std::format("Failed to load configuration file {}", config_path.string())); }
 
-    try { m_config = json::parse(f); } catch (const std::exception &e) {
+    try {
+        m_config = json::parse(f);
+    } catch (const std::exception &e) {
         std::string msg = std::format("Error \"{}\" occurred while parsing the configuration file. "
                                       "Please make sure that the file is in the correct json format.",
                                       e.what());
