@@ -11,20 +11,7 @@
 
 namespace app {
 void MainController::initialize() {
-    //floor_vertices sam koristila i za zidove pa samo rename na vertices
-    float vertices[] = {
-            // pozicija + normala + tekstura koord
-            -0.5f, -0.5f, 0.0f, 0.0f, 0.0f, 1.0f, 0.0f, 0.0f,
-            0.5f, -0.5f, 0.0f, 0.0f, 0.0f, 1.0f, 6.0f, 0.0f,
-            0.5f, 0.5f, 0.0f, 0.0f, 0.0f, 1.0f, 6.0f, 6.0f,
 
-            0.5f, 0.5f, 0.0f, 0.0f, 0.0f, 1.0f, 6.0f, 6.0f,
-            -0.5f, 0.5f, 0.0f, 0.0f, 0.0f, 1.0f, 0.0f, 6.0f,
-            -0.5f, -0.5f, 0.0f, 0.0f, 0.0f, 1.0f, 0.0f, 0.0f};
-
-    const auto textured_quad = engine::graphics::OpenGL::initialize_textured_quad(vertices, sizeof(vertices));
-    m_plane_vao = textured_quad.vao;
-    m_plane_vbo = textured_quad.vbo;
 
     //refactorinng tako da izvucem prvo kontroler resources kao graphic sto sam i onda ucitavanje teksture i shadera
     //inicijalizacija graphic, resources i platform controlera
@@ -182,7 +169,7 @@ void MainController::draw_room(const engine::resources::Shader *shader) const {
     shader->set_int("material.diffuse", 0);
 
 
-    engine::graphics::OpenGL::draw_textured_quad(m_plane_vao, m_floor_texture->id(), 0);
+    m_graphics_controller->draw_textured_quad(m_floor_texture->id(), 0);
 
     //zadnji zid
 
@@ -194,7 +181,7 @@ void MainController::draw_room(const engine::resources::Shader *shader) const {
     shader->set_mat4("model", back_wall_model);
     shader->set_int("material.diffuse", 0);
 
-    engine::graphics::OpenGL::draw_textured_quad(m_plane_vao, m_wall_texture->id(), 0);
+    m_graphics_controller->draw_textured_quad(m_wall_texture->id(), 0);
 
     //levi zid
 
@@ -206,7 +193,9 @@ void MainController::draw_room(const engine::resources::Shader *shader) const {
     shader->set_mat4("model", left_wall_model);
     shader->set_int("material.diffuse", 0);
 
-    engine::graphics::OpenGL::draw_textured_quad(m_plane_vao, m_wall_texture->id(), 0);
+    m_graphics_controller->draw_textured_quad(m_wall_texture->id(), 0);
+
+
 }
 
 void MainController::draw_kitchen(const engine::resources::Shader *shader) const { draw_model(m_kitchen_model, shader, glm::vec3(3.0f, 0.02f, 3.0f), glm::vec3(0.25f)); }

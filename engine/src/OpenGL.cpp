@@ -202,7 +202,17 @@ void OpenGL::draw_textured_quad(uint32_t vao, uint32_t texture_id, uint32_t text
     CHECKED_GL_CALL(glBindVertexArray, 0);
 }
 
-void OpenGL::destroy_textured_quad(uint32_t &vao, uint32_t &vbo) {}
+void OpenGL::destroy_textured_quad(uint32_t &vao, uint32_t &vbo) {
+    if (vbo != 0) {
+        CHECKED_GL_CALL(glDeleteBuffers, 1, &vbo);
+        vbo = 0;
+    }
+
+    if (vao != 0) {
+        CHECKED_GL_CALL(glDeleteVertexArrays, 1, &vao);
+        vao = 0;
+    }
+}
 
 std::string_view gl_call_error_description(GLenum error) {
     switch (error) {

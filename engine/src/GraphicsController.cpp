@@ -93,6 +93,22 @@ void GraphicsController::initialize() {
         const auto framebuffer = OpenGL::initialize_point_shadow_framebuffer(m_point_shadow_resolution, m_point_shadow_resolution);
         m_point_shadow_framebuffer = PointShadowFramebuffer(framebuffer.framebuffer_id, framebuffer.depth_cubemap_id);
     }
+    const float textured_quad_vertices[] = {
+            -0.5f, -0.5f, 0.0f, 0.0f, 0.0f, 1.0f, 0.0f, 0.0f,
+            0.5f, -0.5f, 0.0f, 0.0f, 0.0f, 1.0f, 6.0f, 0.0f,
+            0.5f, 0.5f, 0.0f, 0.0f, 0.0f, 1.0f, 6.0f, 6.0f,
+
+            0.5f, 0.5f, 0.0f, 0.0f, 0.0f, 1.0f, 6.0f, 6.0f,
+            -0.5f, 0.5f, 0.0f, 0.0f, 0.0f, 1.0f, 0.0f, 6.0f,
+            -0.5f, -0.5f, 0.0f, 0.0f, 0.0f, 1.0f, 0.0f, 0.0f,
+    };
+
+    const auto textured_quad = OpenGL::initialize_textured_quad(
+            textured_quad_vertices,
+            sizeof(textured_quad_vertices));
+
+    m_textured_quad_vao = textured_quad.vao;
+    m_textured_quad_vbo = textured_quad.vbo;
 
     IMGUI_CHECKVERSION();
     ImGui::CreateContext();
@@ -105,6 +121,7 @@ void GraphicsController::initialize() {
 void GraphicsController::terminate() {
     m_multisample_framebuffer.destroy();
     m_point_shadow_framebuffer.destroy();
+    OpenGL::destroy_textured_quad(m_textured_quad_vao, m_textured_quad_vbo);
     if (ImGui::GetCurrentContext()) {
         ImGui_ImplOpenGL3_Shutdown();
         ImGui_ImplGlfw_Shutdown();
@@ -154,4 +171,6 @@ void GraphicsController::draw_skybox(const resources::Shader *shader, const reso
     CHECKED_GL_CALL(glDepthFunc, GL_LESS);// set depth function back to default
     CHECKED_GL_CALL(glBindTexture, GL_TEXTURE_CUBE_MAP, 0);
 }
+
+void GraphicsController::draw_textured_quad(uint32_t texture_id, uint32_t texture_unit) const { OpenGL::draw_textured_quad(m_textured_quad_vao, texture_id, texture_unit); }
 }// namespace engine::graphics
