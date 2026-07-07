@@ -55,26 +55,25 @@ void MainController::initialize() {
 
     //point lights
     m_point_lights = {
-            {glm::vec3(3.0f, 2.0f, 0.35f),
-
-             glm::vec3(0.04f, 0.032f, 0.022f),
-             glm::vec3(0.75f, 0.55f, 0.35f),
-             glm::vec3(0.22f, 0.17f, 0.10f),
-
-             1.0f,
-             0.22f,
-             0.18f},
             {
-
+                    glm::vec3(3.0f, 2.0f, 0.35f),
+                    glm::vec3(0.04f, 0.032f, 0.022f),
+                    glm::vec3(0.75f, 0.55f, 0.35f),
+                    glm::vec3(0.22f, 0.17f, 0.10f),
+                    1.0f,
+                    0.22f,
+                    0.18f,
+            },
+            {
                     glm::vec3(0.35f, 2.0f, 3.0f),
-
                     glm::vec3(0.018f, 0.015f, 0.011f),
                     glm::vec3(0.55f, 0.42f, 0.28f),
                     glm::vec3(0.08f, 0.06f, 0.04f),
-
                     1.0f,
                     0.30f,
-                    0.28f}};
+                    0.28f,
+            },
+    };
 }
 
 bool MainController::loop() {
@@ -210,15 +209,7 @@ void MainController::draw_room(const engine::resources::Shader *shader) const {
 
 void MainController::draw_kitchen(const engine::resources::Shader *shader) const { draw_model(m_kitchen_model, shader, glm::vec3(3.0f, 0.02f, 3.0f), glm::vec3(0.25f)); }
 
-void MainController::draw_pug(const engine::resources::Shader *shader) const {
-    if (m_cooking_state == CookingEventState::RawBurgerShown || m_cooking_state == CookingEventState::BurgerCooked) {
-        draw_model(m_pug_model, shader, glm::vec3(5.5f, 0.02f, 3.5f), glm::vec3(0.0f, -25.0f, 0.0f), glm::vec3(0.5f));
-    } else if (m_cooking_state == CookingEventState::BurgerServed) {
-        draw_model(m_pug_model, shader, glm::vec3(0.5f, 0.02f, 3.5f), glm::vec3(0.0f, 25.0f, 0.0f), glm::vec3(0.5f));
-    } else {
-        draw_model(m_pug_model, shader, glm::vec3(3.0f, 0.02f, 1.5f), glm::vec3(0.5f));
-    }
-}
+void MainController::draw_pug(const engine::resources::Shader *shader) const { if (m_cooking_state == CookingEventState::RawBurgerShown || m_cooking_state == CookingEventState::BurgerCooked) { draw_model(m_pug_model, shader, glm::vec3(5.5f, 0.02f, 3.5f), glm::vec3(0.0f, -25.0f, 0.0f), glm::vec3(0.5f)); } else if (m_cooking_state == CookingEventState::BurgerServed) { draw_model(m_pug_model, shader, glm::vec3(0.5f, 0.02f, 3.5f), glm::vec3(0.0f, 25.0f, 0.0f), glm::vec3(0.5f)); } else { draw_model(m_pug_model, shader, glm::vec3(3.0f, 0.02f, 1.5f), glm::vec3(0.5f)); } }
 
 void MainController::draw_lamp(const engine::resources::Shader *shader) const {
     draw_model(m_lamp_back_model, shader, glm::vec3(3.0f, 2.0f, 0.0f), glm::vec3(0.02f));
