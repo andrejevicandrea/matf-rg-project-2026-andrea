@@ -49,7 +49,9 @@ void GraphicsController::resize_multisample_framebuffer(int width, int height) {
 
     m_multisample_framebuffer.destroy();
 
-    OpenGL::initialize_multisample_framebuffer(m_multisample_framebuffer.m_framebuffer_id, m_multisample_framebuffer.m_color_texture_id, m_multisample_framebuffer.m_depth_stencil_renderbuffer_id, width, height, m_multisample_samples);
+    const auto framebuffer = OpenGL::initialize_multisample_framebuffer(width, height, m_multisample_samples);
+
+    m_multisample_framebuffer = MultisampleFramebuffer(framebuffer.framebuffer_id, framebuffer.color_texture_id, framebuffer.depth_stencil_renderbuffer_id);
 }
 
 void GraphicsController::initialize() {
@@ -86,9 +88,11 @@ void GraphicsController::initialize() {
 
     platform->register_platform_event_observer(std::make_unique<GraphicsPlatformEventObserver>(this));
     CHECKED_GL_CALL(glViewport, 0, 0, platform->window()->width(), platform->window()->height());
-    //OpenGL::initialize_multisample_framebuffer(m_multisample_framebuffer.m_framebuffer_id, m_multisample_framebuffer.m_color_texture_id, m_multisample_framebuffer.m_depth_stencil_renderbuffer_id, platform->window()->width(), platform->window()->height(), 4);
     if (m_multisample_enabled) { resize_multisample_framebuffer(platform->window()->width(), platform->window()->height()); }
-    if (m_point_shadow_enabled) { OpenGL::initialize_point_shadow_framebuffer(m_point_shadow_framebuffer.m_framebuffer_id, m_point_shadow_framebuffer.m_depth_cubemap_id, m_point_shadow_resolution, m_point_shadow_resolution); }
+    if (m_point_shadow_enabled) {
+        const auto framebuffer = OpenGL::initialize_point_shadow_framebuffer(m_point_shadow_resolution, m_point_shadow_resolution);
+        m_point_shadow_framebuffer = PointShadowFramebuffer(framebuffer.framebuffer_id, framebuffer.depth_cubemap_id);
+    }
 
     IMGUI_CHECKVERSION();
     ImGui::CreateContext();

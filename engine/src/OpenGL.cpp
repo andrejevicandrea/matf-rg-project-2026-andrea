@@ -62,7 +62,7 @@ uint32_t OpenGL::init_skybox_cube() {
     static unsigned int skybox_vao = 0;
     if (skybox_vao != 0) { return skybox_vao; }
     float vertices[] = {
-// clang-format off
+            // clang-format off
             #include <skybox_vertices.include>
             // clang-format on
     };
@@ -98,12 +98,13 @@ std::string OpenGL::get_compilation_error_message(uint32_t shader_id) {
     return infoLog;
 }
 
-void OpenGL::initialize_multisample_framebuffer(uint32_t &framebuffer_id, uint32_t &color_texture_id, uint32_t &depth_stencil_renderbuffer_id, int32_t width, int32_t height, int32_t samples) {
-    CHECKED_GL_CALL(glGenFramebuffers, 1, &framebuffer_id);
-    CHECKED_GL_CALL(glBindFramebuffer, GL_FRAMEBUFFER, framebuffer_id);
+MultisampleFramebufferData OpenGL::initialize_multisample_framebuffer(int32_t width, int32_t height, int32_t samples) {
+    MultisampleFramebufferData framebuffer_data{};
+    CHECKED_GL_CALL(glGenFramebuffers, 1, &framebuffer_data.framebuffer_id);
+    CHECKED_GL_CALL(glBindFramebuffer, GL_FRAMEBUFFER, framebuffer_data.framebuffer_id);
 
-    CHECKED_GL_CALL(glGenTextures, 1, &color_texture_id);
-    CHECKED_GL_CALL(glBindTexture, GL_TEXTURE_2D_MULTISAMPLE, color_texture_id);
+    CHECKED_GL_CALL(glGenTextures, 1, &framebuffer_data.color_texture_id);
+    CHECKED_GL_CALL(glBindTexture, GL_TEXTURE_2D_MULTISAMPLE, framebuffer_data.color_texture_id);
     CHECKED_GL_CALL(glTexImage2DMultisample, GL_TEXTURE_2D_MULTISAMPLE, samples, GL_RGB, width, height, GL_TRUE);
     int32_t actual_samples = 0;
 
@@ -118,25 +119,29 @@ void OpenGL::initialize_multisample_framebuffer(uint32_t &framebuffer_id, uint32
             "Requested MSAA samples: {}, actual texture samples: {}",
             samples,
             actual_samples);
-    CHECKED_GL_CALL(glFramebufferTexture2D, GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D_MULTISAMPLE, color_texture_id, 0);
+    CHECKED_GL_CALL(glFramebufferTexture2D, GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D_MULTISAMPLE, framebuffer_data.color_texture_id, 0);
 
-    CHECKED_GL_CALL(glGenRenderbuffers, 1, &depth_stencil_renderbuffer_id);
-    CHECKED_GL_CALL(glBindRenderbuffer, GL_RENDERBUFFER, depth_stencil_renderbuffer_id);
+    CHECKED_GL_CALL(glGenRenderbuffers, 1, &framebuffer_data.depth_stencil_renderbuffer_id);
+    CHECKED_GL_CALL(glBindRenderbuffer, GL_RENDERBUFFER, framebuffer_data.depth_stencil_renderbuffer_id);
     CHECKED_GL_CALL(glRenderbufferStorageMultisample, GL_RENDERBUFFER, samples, GL_DEPTH24_STENCIL8, width, height);
-    CHECKED_GL_CALL(glFramebufferRenderbuffer, GL_FRAMEBUFFER, GL_DEPTH_STENCIL_ATTACHMENT, GL_RENDERBUFFER, depth_stencil_renderbuffer_id);
+    CHECKED_GL_CALL(glFramebufferRenderbuffer, GL_FRAMEBUFFER, GL_DEPTH_STENCIL_ATTACHMENT, GL_RENDERBUFFER, framebuffer_data.depth_stencil_renderbuffer_id);
 
     RG_GUARANTEE(CHECKED_GL_CALL(glCheckFramebufferStatus, GL_FRAMEBUFFER) == GL_FRAMEBUFFER_COMPLETE, "Multisample framebuffer is not complete.");
 
     CHECKED_GL_CALL(glBindTexture, GL_TEXTURE_2D_MULTISAMPLE, 0);
     CHECKED_GL_CALL(glBindRenderbuffer, GL_RENDERBUFFER, 0);
     CHECKED_GL_CALL(glBindFramebuffer, GL_FRAMEBUFFER, 0);
+
+    return framebuffer_data;
 }
 
-void OpenGL::initialize_point_shadow_framebuffer(uint32_t &framebuffer_id, uint32_t &depth_cubemap_id, int32_t width, int32_t height) {
-    CHECKED_GL_CALL(glGenFramebuffers, 1, &framebuffer_id);
+PointShadowFramebufferData OpenGL::initialize_point_shadow_framebuffer(int32_t width, int32_t height) {
 
-    CHECKED_GL_CALL(glGenTextures, 1, &depth_cubemap_id);
-    CHECKED_GL_CALL(glBindTexture, GL_TEXTURE_CUBE_MAP, depth_cubemap_id);
+    PointShadowFramebufferData framebuffer_data{};
+    CHECKED_GL_CALL(glGenFramebuffers, 1, &framebuffer_data.framebuffer_id);
+
+    CHECKED_GL_CALL(glGenTextures, 1, &framebuffer_data.depth_cubemap_id);
+    CHECKED_GL_CALL(glBindTexture, GL_TEXTURE_CUBE_MAP, framebuffer_data.depth_cubemap_id);
 
     for (uint32_t i = 0; i < 6; i++) { CHECKED_GL_CALL(glTexImage2D, GL_TEXTURE_CUBE_MAP_POSITIVE_X + i, 0, GL_DEPTH_COMPONENT, width, height, 0, GL_DEPTH_COMPONENT, GL_FLOAT, nullptr); }
 
@@ -146,8 +151,8 @@ void OpenGL::initialize_point_shadow_framebuffer(uint32_t &framebuffer_id, uint3
     CHECKED_GL_CALL(glTexParameteri, GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
     CHECKED_GL_CALL(glTexParameteri, GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_R, GL_CLAMP_TO_EDGE);
 
-    CHECKED_GL_CALL(glBindFramebuffer, GL_FRAMEBUFFER, framebuffer_id);
-    CHECKED_GL_CALL(glFramebufferTexture, GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, depth_cubemap_id, 0);
+    CHECKED_GL_CALL(glBindFramebuffer, GL_FRAMEBUFFER, framebuffer_data.framebuffer_id);
+    CHECKED_GL_CALL(glFramebufferTexture, GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, framebuffer_data.depth_cubemap_id, 0);
     CHECKED_GL_CALL(glDrawBuffer, GL_NONE);
     CHECKED_GL_CALL(glReadBuffer, GL_NONE);
 
@@ -155,15 +160,19 @@ void OpenGL::initialize_point_shadow_framebuffer(uint32_t &framebuffer_id, uint3
 
     CHECKED_GL_CALL(glBindTexture, GL_TEXTURE_CUBE_MAP, 0);
     CHECKED_GL_CALL(glBindFramebuffer, GL_FRAMEBUFFER, 0);
+
+    return framebuffer_data;
 }
 
-void OpenGL::initialize_textured_quad(uint32_t &vao, uint32_t &vbo, const float *vertices, std::size_t vertices_size) {
+TexturedQuadData OpenGL::initialize_textured_quad(const float *vertices, std::size_t vertices_size) {
 
-    CHECKED_GL_CALL(glGenVertexArrays, 1, &vao);
-    CHECKED_GL_CALL(glGenBuffers, 1, &vbo);
+    TexturedQuadData textured_quad_data{};
 
-    CHECKED_GL_CALL(glBindVertexArray, vao);
-    CHECKED_GL_CALL(glBindBuffer, GL_ARRAY_BUFFER, vbo);
+    CHECKED_GL_CALL(glGenVertexArrays, 1, &textured_quad_data.vao);
+    CHECKED_GL_CALL(glGenBuffers, 1, &textured_quad_data.vbo);
+
+    CHECKED_GL_CALL(glBindVertexArray, textured_quad_data.vao);
+    CHECKED_GL_CALL(glBindBuffer, GL_ARRAY_BUFFER, textured_quad_data.vbo);
 
     CHECKED_GL_CALL(glBufferData, GL_ARRAY_BUFFER, vertices_size, vertices, GL_STATIC_DRAW);
 
@@ -178,6 +187,8 @@ void OpenGL::initialize_textured_quad(uint32_t &vao, uint32_t &vbo, const float 
 
     CHECKED_GL_CALL(glBindBuffer, GL_ARRAY_BUFFER, 0);
     CHECKED_GL_CALL(glBindVertexArray, 0);
+
+    return textured_quad_data;
 }
 
 void OpenGL::draw_textured_quad(uint32_t vao, uint32_t texture_id, uint32_t texture_unit) {
@@ -200,7 +211,7 @@ std::string_view gl_call_error_description(GLenum error) {
         case GL_INVALID_VALUE: return "GL_INVALID_VALUE: A numeric argument is out of range. The offending command is ignored and has no other side effect than to set the error flag.  ";
         case GL_INVALID_OPERATION: return "GL_INVALID_OPERATION: The specified operation is not allowed in the current state. The offending command is ignored and has no other side effect than to set the error flag.  ";
         case GL_INVALID_FRAMEBUFFER_OPERATION: return "GL_INVALID_FRAMEBUFFER_OPERATION: The framebuffer object is not complete."
-                                                      "The offending command is ignored and has no other side effect than to set the error flag.";
+                    "The offending command is ignored and has no other side effect than to set the error flag.";
         case GL_OUT_OF_MEMORY: return "GL_OUT_OF_MEMORY: There is not enough memory left to execute the command. The state of the GL is undefined, except for the state of the error flags, after this error is recorded. . ";
         default: return "No Description";
     }
@@ -265,19 +276,7 @@ void OpenGL::resolve_framebuffer(uint32_t framebuffer_id, int32_t width, int32_t
 }
 
 uint32_t face_index(std::string_view name) {
-    if (name == "right") {
-        return 0;
-    } else if (name == "left") {
-        return 1;
-    } else if (name == "top") {
-        return 2;
-    } else if (name == "bottom") {
-        return 3;
-    } else if (name == "front") {
-        return 4;
-    } else if (name == "back") {
-        return 5;
-    } else {
+    if (name == "right") { return 0; } else if (name == "left") { return 1; } else if (name == "top") { return 2; } else if (name == "bottom") { return 3; } else if (name == "front") { return 4; } else if (name == "back") { return 5; } else {
         RG_SHOULD_NOT_REACH_HERE(
                 "Unknown face name: {}. The cubemap textures should be named: right, left, top, bottom, front, back; by their respective faces in the cubemap. The extension of the image file is ignored.",
                 name);

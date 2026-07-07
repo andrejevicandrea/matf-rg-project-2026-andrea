@@ -22,7 +22,9 @@ void MainController::initialize() {
             -0.5f, 0.5f, 0.0f, 0.0f, 0.0f, 1.0f, 0.0f, 6.0f,
             -0.5f, -0.5f, 0.0f, 0.0f, 0.0f, 1.0f, 0.0f, 0.0f};
 
-    engine::graphics::OpenGL::initialize_textured_quad(m_plane_vao, m_plane_vbo, vertices, sizeof(vertices));
+    const auto textured_quad = engine::graphics::OpenGL::initialize_textured_quad(vertices, sizeof(vertices));
+    m_plane_vao = textured_quad.vao;
+    m_plane_vbo = textured_quad.vbo;
 
     //refactorinng tako da izvucem prvo kontroler resources kao graphic sto sam i onda ucitavanje teksture i shadera
     //inicijalizacija graphic, resources i platform controlera
