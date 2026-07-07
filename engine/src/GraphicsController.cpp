@@ -14,11 +14,7 @@
 namespace engine::graphics {
 
 void GraphicsController::begin_draw() {
-    if (m_multisample_enabled) {
-        OpenGL::bind_framebuffer(m_multisample_framebuffer.id());
-    } else {
-        OpenGL::bind_framebuffer(0);
-    }
+    if (m_multisample_enabled) { OpenGL::bind_framebuffer(m_multisample_framebuffer.id()); } else { OpenGL::bind_framebuffer(0); }
     OpenGL::clear_buffers();
 }
 
@@ -41,17 +37,15 @@ void GraphicsController::end_point_shadow_pass() {
     if (!m_point_shadow_enabled) { return; }
 
     const auto platform = engine::platform::PlatformController::get<platform::PlatformController>();
-    if (m_multisample_enabled) {
-        OpenGL::bind_framebuffer(m_multisample_framebuffer.id());
-    } else {
-        OpenGL::bind_framebuffer(0);
-    }
+    if (m_multisample_enabled) { OpenGL::bind_framebuffer(m_multisample_framebuffer.id()); } else { OpenGL::bind_framebuffer(0); }
 
     CHECKED_GL_CALL(glViewport, 0, 0, platform->window()->width(), platform->window()->height());
 }
 
 void GraphicsController::resize_multisample_framebuffer(int width, int height) {
-    if (!m_multisample_enabled || width <= 0 || height <= 0) { return; }
+    if (!m_multisample_enabled) { return; }
+
+    RG_GUARANTEE(width > 0 && height > 0, "Invalid multisample framebuffer size");
 
     m_multisample_framebuffer.destroy();
 
@@ -115,7 +109,9 @@ void GraphicsController::terminate() {
 }
 
 void GraphicsPlatformEventObserver::on_window_resize(int width, int height) {
-    if (width <= 0 || height <= 0) { return; }
+
+    RG_GUARANTEE(width >= 0 && height >= 0, "Invalid window size");
+    if (width == 0 || height == 0) { return; }
 
 
     m_graphics->perspective_params().Width = static_cast<float>(width);
